@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Task1
 {
@@ -11,17 +9,23 @@ namespace Task1
     {
         public Settings()
         {
-            OriginalPaths = new List<string>();
+            SourceDirs = new List<string>();
+        }
+
+        public Settings(List<string> sourceDirs, string destDir)
+        {
+            SourceDirs = sourceDirs;
+            DestinationDir = destDir;
         }
 
         /// <summary>
         /// Список путей до исходных папок
         /// </summary>
-        public List<string> OriginalPaths { get; set; }
+        public List<string> SourceDirs { get; set; }
 
         /// <summary>
         /// Путь до папки назначения
         /// </summary>
-        public string DestinationPath { get; set; }
+        public string DestinationDir { get; set; }
     }
 }
