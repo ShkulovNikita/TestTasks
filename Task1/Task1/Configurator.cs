@@ -60,5 +60,39 @@ namespace Task1
         {
             return (File.Exists(settingsName));
         }
+
+        /// <summary>
+        /// Получение настроек из файла
+        /// </summary>
+        /// <returns>Настройки в виде объекта либо null, если получить его не удалось</returns>
+        static public Settings GetSettings()
+        {
+            // настройки в JSON-формате
+            string settingsJson;
+
+            // получение настроек из файла
+            try
+            {
+                using (StreamReader reader = new StreamReader(settingsName))
+                {
+                    settingsJson = reader.ReadToEnd();
+                }
+            }
+            catch (IOException exception)
+            {
+                return null;
+            }
+
+            // парсинг настроек в объект
+            try
+            {
+                Settings result = JsonSerializer.Deserialize<Settings>(settingsJson);
+                return result;
+            }
+            catch (JsonException exception)
+            {
+                return null;
+            }
+        }
     }
 }

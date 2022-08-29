@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Task1
 {
@@ -19,10 +18,17 @@ namespace Task1
                     return;
                 }
             }
-            
-            
+
+            // получить настройки
+            Settings settings = Configurator.GetSettings();
+            if (settings == null)
+            {
+                Console.WriteLine("Завершение программы: не удалось получить настройки из файла.");
+                return;
+            }
             
             Console.WriteLine("Выполнение программы завершено");
+            Console.ReadKey();
         }
     }
 }

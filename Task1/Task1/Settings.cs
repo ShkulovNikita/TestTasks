@@ -5,7 +5,7 @@ namespace Task1
     /// <summary>
     /// Класс с данными из файла настроек
     /// </summary>
-    class Settings
+    public class Settings
     {
         public Settings()
         {
