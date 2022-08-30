@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Security;
 
@@ -72,7 +70,7 @@ namespace Task1
             }
             catch (Exception ex)
             {
-                return "Не удалось создать папку для копирования файлов";
+                return "Не удалось создать папку для копирования файлов: " + path;
             }
         }
 

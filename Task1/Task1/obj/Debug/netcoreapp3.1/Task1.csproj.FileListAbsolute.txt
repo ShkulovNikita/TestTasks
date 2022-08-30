@@ -12,3 +12,6 @@ D:\Tasks\TestTasks\Task1\Task1\obj\Debug\netcoreapp3.1\Task1.csproj.CoreCompileI
 D:\Tasks\TestTasks\Task1\Task1\obj\Debug\netcoreapp3.1\Task1.dll
 D:\Tasks\TestTasks\Task1\Task1\obj\Debug\netcoreapp3.1\Task1.pdb
 D:\Tasks\TestTasks\Task1\Task1\obj\Debug\netcoreapp3.1\Task1.genruntimeconfig.cache
+D:\Tasks\TestTasks\Task1\Task1\bin\Debug\netcoreapp3.1\NLog.dll
+D:\Tasks\TestTasks\Task1\Task1\obj\Debug\netcoreapp3.1\Task1.csproj.CopyComplete
+D:\Tasks\TestTasks\Task1\Task1\bin\Debug\netcoreapp3.1\nlog.config

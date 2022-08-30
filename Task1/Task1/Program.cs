@@ -6,17 +6,13 @@ namespace Task1
     {
         static void Main(string[] args)
         {
+            LogWrapper.Logger.Info("Запуск приложения");
+
             // проверить, существует ли файл настроек
             if (!Configurator.SettingsExist())
             {
-                // попытка создания конфигурационного файла, если он не найден
-                bool result = UserDialogue.CreateConfigureFile();
-                // если не удалось создать файл, то завершить программу
-                if (!result)
-                {
-                    Console.WriteLine("Завершение программы: нет файла настроек.");
-                    return;
-                }
+                Console.WriteLine("Завершение программы: нет файла настроек.");
+                return;
             }
 
             // получить настройки
@@ -30,6 +26,7 @@ namespace Task1
             // выполнить копирование
             string backupResult = Backuper.Execute(settings);
 
+            // вывести сообщения о ходе копирования
             if (backupResult != "")
                 Console.WriteLine(backupResult);
             

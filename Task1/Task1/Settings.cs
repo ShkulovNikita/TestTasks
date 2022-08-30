@@ -12,12 +12,6 @@ namespace Task1
             SourceDirs = new List<string>();
         }
 
-        public Settings(List<string> sourceDirs, string destDir)
-        {
-            SourceDirs = sourceDirs;
-            DestinationDir = destDir;
-        }
-
         /// <summary>
         /// Список путей до исходных папок
         /// </summary>
@@ -27,5 +21,10 @@ namespace Task1
         /// Путь до папки назначения
         /// </summary>
         public string DestinationDir { get; set; }
+
+        /// <summary>
+        /// Уровень журналирования
+        /// </summary>
+        public string LogLevel { get; set; }
     }
 }

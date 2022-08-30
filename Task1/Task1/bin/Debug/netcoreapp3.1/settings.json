@@ -1,7 +1,9 @@
 {
   "SourceDirs": [
     "D:\\NewDir",
-    "D:\\NewDir2"
+    "D:\\NewDir2",
+	"D:\\NewDir3"
   ],
-  "DestinationDir": "D:\\EndDir"
+  "DestinationDir": "D:\\EndDir",
+  "LogLevel": "ee"
 }
