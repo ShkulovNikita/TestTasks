@@ -26,6 +26,12 @@ namespace Task1
                 Console.WriteLine("Завершение программы: не удалось получить настройки из файла.");
                 return;
             }
+
+            // выполнить копирование
+            string backupResult = Backuper.Execute(settings);
+
+            if (backupResult != "")
+                Console.WriteLine(backupResult);
             
             Console.WriteLine("Выполнение программы завершено");
             Console.ReadKey();
