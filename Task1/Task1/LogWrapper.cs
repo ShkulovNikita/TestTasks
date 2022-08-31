@@ -19,30 +19,37 @@ namespace Task1
             try
             {
                 // получить уровень логгирования из файла настроек
-                Settings settings = Configurator.GetSettings();
-                if (settings == null)
+                string logLevel = Configurator.GetLogLevel();
+
+                if (logLevel == "no file")
                 {
                     Logger = LogManager.GetLogger("DebugLogger");
-                    Logger.Error("Не удалось получить уровень журналирования из файла настроек");
+                    Logger.Error("Журнал: не удалось прочитать файл настроек");
                 }
                 else
                 {
-                    string logLevel = settings.LogLevel;
-
+                    if (logLevel == "wrong format")
+                    {
+                        Logger = LogManager.GetLogger("DebugLogger");
+                        Logger.Error("Журнал: не удалось получить уровень журналирования из файла настроек");
+                    }
                     // проверка корректности заданного уровня журналирования
-                    if ((logLevel != "Error") || (logLevel != "Info") || (logLevel != "Debug"))
+                    else if ((logLevel != "Error") && (logLevel != "Info") && (logLevel != "Debug"))
                     {
                         // если задано "неизвестное" значение - значение по умолчанию "Debug"
                         Logger = LogManager.GetLogger("DebugLogger");
-                        Logger.Error("В файле настроек задан некорректный уровень журналирования");
+                        Logger.Error("Журнал: в файле настроек задан некорректный уровень журналирования");
                     }
                     else
+                    {
                         Logger = LogManager.GetLogger($"{logLevel}Logger");
+                        Logger.Info($"К журналу применен уровень из файла настроек: {logLevel}");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                // если возникла ошибка или не удалось открыть файл, то значение по умолчанию "Debug"
+                // если возникла ошибка, то значение по умолчанию "Debug"
                 Logger = LogManager.GetLogger("DebugLogger");
                 Logger.Error(ex.Message);
             }

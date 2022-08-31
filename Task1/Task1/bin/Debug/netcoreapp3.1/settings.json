@@ -5,5 +5,5 @@
 	"D:\\NewDir3"
   ],
   "DestinationDir": "D:\\EndDir",
-  "LogLevel": "ee"
+  "LogLevel": "Debug"
 }

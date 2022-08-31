@@ -21,15 +21,22 @@ namespace Task1
             string timestamp = GetTimestamp();
 
             // полный путь до папки для копирования
-            string path = $"{settings.DestinationDir}/{timestamp}";
+            string path = $"{settings.DestinationDir}\\{timestamp}";
+            LogWrapper.Logger.Debug($"Конечная папка: {path}");
 
             // создание конечной папки
+            LogWrapper.Logger.Info("Создание конечной папки для копирования");
             string createDirResult = CreateDirectory(path);
             if (createDirResult != "ok")
+            {
                 return createDirResult;
+            }
 
             // сообщения о ходе копирования
             string results = "";
+
+            LogWrapper.Logger.Debug("Начало выполнения резервного копирования");
+            LogWrapper.Logger.Debug($"Количество исходных папок: {settings.SourceDirs.Count}");
 
             // выполнение резервного копирования
             foreach (string sourceDir in settings.SourceDirs)
@@ -37,6 +44,7 @@ namespace Task1
                 results += CopyFolder(sourceDir, path);
             }
 
+            LogWrapper.Logger.Debug("Завершение процесса резервного копирования");
             return results;
         }
 
@@ -51,6 +59,9 @@ namespace Task1
             DateTime backupDate = DateTime.Now;
             // преобразование во временной штамп
             string timestamp = backupDate.ToString("yyyy-MM-dd_HH-mm-ss");
+
+            LogWrapper.Logger.Debug($"Временной штамп: {timestamp}");
+
             return timestamp;
         }
 
@@ -66,10 +77,12 @@ namespace Task1
             {
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
+                LogWrapper.Logger.Debug($"Конечная папка {path} успешно создана");
                 return "ok";
             }
             catch (Exception ex)
             {
+                LogWrapper.Logger.Error($"Не удалось создать конечную папку: {ex.Message}");
                 return "Не удалось создать папку для копирования файлов: " + path;
             }
         }
@@ -82,20 +95,32 @@ namespace Task1
         /// <returns>Результат операции</returns>
         static private string CopyFolder(string sourceDir, string destDir)
         {
+            LogWrapper.Logger.Info($"Обработка папки {sourceDir}");
+
             // проверить валидность имени исходного каталога
             try
             {
                 FileInfo info = new FileInfo(sourceDir);
+                LogWrapper.Logger.Debug($"Имя директории прошло валидацию");
             }
             catch (ArgumentException)
             {
-                return "\'" + sourceDir + "\': неправильный формат имени исходной папки.\n";
+                LogWrapper.Logger.Error($"Имя директории {sourceDir} не прошло валидацию, папка пропущена");
+                return $"\'{sourceDir}\': неправильный формат имени исходной папки.\n";
+            }
+
+            // проверить существование исходного каталога
+            if (!Directory.Exists(sourceDir))
+            {
+                LogWrapper.Logger.Error($"Исходная директория {sourceDir} не найдена");
+                return $"\'{sourceDir}\': исходная папка не найдена.\n";
             }
 
             // путь для нового каталога в папке-архиве
-            string path = $"{destDir}/{new DirectoryInfo(sourceDir).Name}";
+            string path = $"{destDir}\\{new DirectoryInfo(sourceDir).Name}";
 
             // создать в папке назначения новую папку с названием копируемой
+            LogWrapper.Logger.Info($"Создание конечной подпапки {path}");
             string mkDirResult = CreateDirectory(path);
             if (mkDirResult != "ok")
             {
@@ -114,31 +139,40 @@ namespace Task1
             string[] files;
             try
             {
+                LogWrapper.Logger.Info("Получение списка файлов в исходной папке");
                 files = GetFiles(sourceDir);
+                LogWrapper.Logger.Debug($"Найдено {files.Length} файлов");
             }
             catch (Exception ex)
             {
-                resultMessage += "Не удалось получить файлы папки " 
-                    + new DirectoryInfo(sourceDir).Name + ".\n";
+                resultMessage += $"Не удалось получить файлы папки {new DirectoryInfo(sourceDir).Name}.\n";
+                LogWrapper.Logger.Error($"Не удалось получить файлы папки {new DirectoryInfo(sourceDir).Name}: {ex.Message}");
                 files = new string[0];
             }
 
+            LogWrapper.Logger.Info("Копирование файлов");
             // скопировать файлы
             string filesCopyResult = CopyFiles(files, path);
             resultMessage += filesCopyResult;
+            LogWrapper.Logger.Info($"Копирование файлов из директории {sourceDir} завершено");
 
             // получить все подкаталоги
             string[] dirs;
             try
             {
+                LogWrapper.Logger.Info($"Получение списка подкаталогов в исходной папке");
                 dirs = GetSubDirectories(sourceDir);
+                LogWrapper.Logger.Debug($"Найдено {dirs.Length} подкаталогов");
             }
             catch (Exception ex)
             {
-                resultMessage += "Не удалось получить подкаталоги папки "
-                    + new DirectoryInfo(sourceDir).Name + ".\n";
+                resultMessage += $"Не удалось получить подкаталоги папки {new DirectoryInfo(sourceDir).Name}.\n";
+                LogWrapper.Logger.Error($"Не удалось получить подкаталоги папки {new DirectoryInfo(sourceDir).Name}: {ex.Message}");
                 dirs = new string[0];
             }
+
+            if (dirs.Length > 0)
+                LogWrapper.Logger.Info("Обработка подкаталогов");
 
             // обработать все файлы в подпапках
             foreach (string dir in dirs)
@@ -189,29 +223,35 @@ namespace Task1
                 FileInfo fileInfo = new FileInfo(file);
                 if (fileInfo.Exists)
                 {
+                    LogWrapper.Logger.Debug($"Обработка файла {file}");
                     try
                     {
                         fileInfo.CopyTo(destDir + "/" + Path.GetFileName(file));
+                        LogWrapper.Logger.Debug($"Файл {file} успешно скопирован");
                     }
                     catch (SecurityException ex)
                     {
                         resultMessage += "Файл " + new DirectoryInfo(file).Name + "/" + fileInfo.Name
                             + ": " + "Отсутствует разрешение на доступ к файлу.\n";
+                        LogWrapper.Logger.Error($"Файл {file}: {ex.Message}");
                     }
                     catch (UnauthorizedAccessException ex)
                     {
                         resultMessage += "Файл " + new DirectoryInfo(file).Name + "/" + fileInfo.Name
                             + ": " + "Файл перемещен на другой диск.\n";
+                        LogWrapper.Logger.Error($"Файл {file}: {ex.Message}");
                     }
                     catch (PathTooLongException ex)
                     {
                         resultMessage += "Файл " + new DirectoryInfo(file).Name + "/" + fileInfo.Name
                             + ": " + "Указанный путь превышает разрешенную максимальную длину пути.\n";
+                        LogWrapper.Logger.Error($"Файл {file}: {ex.Message}");
                     }
                     catch (IOException ex)
                     {
                         resultMessage += "Файл " + new DirectoryInfo(file).Name + "/" + fileInfo.Name
                             + ": " + "Произошла ошибка.\n";
+                        LogWrapper.Logger.Error($"Файл {file}: {ex.Message}");
                     }
                 }
             }

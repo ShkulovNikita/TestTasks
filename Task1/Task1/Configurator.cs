@@ -24,15 +24,17 @@ namespace Task1
         }
 
         /// <summary>
-        /// Получение настроек из файла
+        /// Получение из файла настроек уровня журналирования
+        /// (упрощенный метод GetSettings без журналирования, так как
+        /// логгер ещё не инициализирован)
         /// </summary>
-        /// <returns>Настройки в виде объекта либо null, если получить его не удалось</returns>
-        static public Settings GetSettings()
+        /// <returns>Уровень журналирования</returns>
+        static public string GetLogLevel()
         {
-            // настройки в JSON-формате
+            // JSON с настройками из файла
             string settingsJson;
 
-            // получение настроек из файла
+            // чтение из файла
             try
             {
                 using (StreamReader reader = new StreamReader(settingsName))
@@ -40,19 +42,72 @@ namespace Task1
                     settingsJson = reader.ReadToEnd();
                 }
             }
+            catch
+            {
+                return "no file";
+            }
+
+            // парсинг настроек
+            try
+            {
+                Settings settings = JsonSerializer.Deserialize<Settings>(settingsJson);
+                string level = settings.LogLevel;
+
+                return level;
+            }
+            catch
+            {
+                return "wrong format";
+            }
+        }
+
+        /// <summary>
+        /// Получение настроек из файла
+        /// </summary>
+        /// <returns>Настройки в виде объекта либо null, если получить его не удалось</returns>
+        static public Settings GetSettings()
+        {
+            LogWrapper.Logger.Info("Получение настроек из файла");
+
+            // настройки в JSON-формате
+            string settingsJson;
+
+            // чтение из файла
+            try
+            {
+                LogWrapper.Logger.Debug($"Попытка чтения файла {settingsName}");
+                using (StreamReader reader = new StreamReader(settingsName))
+                {
+                    settingsJson = reader.ReadToEnd();
+                }
+                LogWrapper.Logger.Debug("Настройки из файла получены");
+            }
             catch (Exception ex)
             {
+                LogWrapper.Logger.Error($"Не удалось прочитать файл: {ex.Message}");
                 return null;
             }
 
             // парсинг настроек в объект
             try
             {
+                LogWrapper.Logger.Debug("Выполнение десериализации настроек");
                 Settings result = JsonSerializer.Deserialize<Settings>(settingsJson);
+
+                LogWrapper.Logger.Info("Настройки из файла успешно прочтены");
+                LogWrapper.Logger.Debug($"Исходные папки:");
+                foreach (string dir in result.SourceDirs)
+                {
+                    LogWrapper.Logger.Debug(dir);
+                }
+                LogWrapper.Logger.Debug($"Конечная папка: {result.DestinationDir}");
+                LogWrapper.Logger.Debug($"Уровень журналирования: {result.LogLevel}");
+
                 return result;
             }
             catch (JsonException ex)
             {
+                LogWrapper.Logger.Error($"Не удалось десериализовать настройки: {ex.Message}");
                 return null;
             }
         }
