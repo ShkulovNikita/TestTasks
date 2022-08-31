@@ -1,8 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Task2.ViewModels;
+@model FeedViewModel;
+
+@{
+    ViewData["Title"] = "RSS-фидер";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    <!--Блок меню настроек-->
+    <div class="col-4">
+        <form method="post">
+            @foreach (string feed in Model.Feeds)
+            {
+                <input type="text" name="feedLink" value="@feed" class="feed-link" />
+            }
+            <input type="number" name="updateTime" value="@Model.UpdateTime" />
+            <input type="submit" class="btn btn-primary" value="Сохранить" />
+        </form>
+    </div>
 </div>
+

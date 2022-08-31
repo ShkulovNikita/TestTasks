@@ -10,6 +10,19 @@ namespace Task2.Models
         public Config() { }
 
         /// <summary>
+        /// Клонирование объекта с настройками
+        /// </summary>
+        /// <param name="original"></param>
+        public Config (Config original)
+        {
+            Feeds = original.Feeds;
+            Update = original.Update;
+            Proxy = original.Proxy;
+            Login = original.Login;
+            Password = original.Password;
+        }
+
+        /// <summary>
         /// Добавленные RSS-ленты
         /// </summary>
         public List<string> Feeds { get; set; } = new List<string>();

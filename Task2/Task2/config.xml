@@ -1,14 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<!--Ленты RSS-->
-	<Feeds>
-		<string>https://habr.com/rss/interesting/</string>
-	</Feeds>
-	<!--Частота обновления в миллисекундах-->
-	<Update>10000</Update>
-	<!--Адрес прокси-сервера-->
-	<Proxy>proxyaddress</Proxy>
-	<!--Данные для подключения-->
-	<Login>testlogin</Login>
-	<Password>testpassword</Password>
+  <Feeds>
+    <string>https://habr.com/rss/interesting/</string>
+  </Feeds>
+  <Update>67</Update>
+  <Proxy>proxyaddress</Proxy>
+  <Login>testlogin</Login>
+  <Password>testpassword</Password>
 </Config>
