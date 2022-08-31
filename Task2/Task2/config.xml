@@ -3,7 +3,7 @@
   <Feeds>
     <string>https://habr.com/rss/interesting/</string>
   </Feeds>
-  <Update>67</Update>
+  <Update>71</Update>
   <Proxy>proxyaddress</Proxy>
   <Login>testlogin</Login>
   <Password>testpassword</Password>

@@ -1,13 +1,26 @@
 ﻿@using Task2.ViewModels;
+@using Task2.HtmlHelpers; 
+
 @model FeedViewModel;
 
 @{
     ViewData["Title"] = "RSS-фидер";
+
+    // сообщения со стороны сервера
+    string success = null;
+    if (TempData["Success"] != null)
+        success = TempData["Success"].ToString();
+
+    string error = null;
+    if (TempData["Error"] != null)
+        error = TempData["Error"].ToString();
 }
 
 <div class="row">
     <!--Блок меню настроек-->
     <div class="col-4">
+        @Html.CheckError(error)
+        @Html.CheckSuccess(success)
         <form method="post">
             @foreach (string feed in Model.Feeds)
             {
