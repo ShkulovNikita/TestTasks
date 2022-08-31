@@ -1,1 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+	<!--Ленты RSS-->
+	<feeds>
+		<feed>https://habr.com/rss/interesting/</feed>
+	</feeds>
+	<!--Частота обновления в миллисекундах-->
+	<update>10000</update>
+	<!--Адрес прокси-сервера-->
+	<proxy></proxy>
+	<!--Данные для подключения-->
+	<login></login>
+	<password></password>
+</config>

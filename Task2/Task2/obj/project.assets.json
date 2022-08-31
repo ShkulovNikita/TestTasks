@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tyuio\\source\\repos\\Task2\\Task2\\Task2.csproj",
+      "projectUniqueName": "D:\\Tasks\\TestTasks\\Task2\\Task2\\Task2.csproj",
       "projectName": "Task2",
-      "projectPath": "C:\\Users\\tyuio\\source\\repos\\Task2\\Task2\\Task2.csproj",
+      "projectPath": "D:\\Tasks\\TestTasks\\Task2\\Task2\\Task2.csproj",
       "packagesPath": "C:\\Users\\tyuio\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\tyuio\\source\\repos\\Task2\\Task2\\obj\\",
+      "outputPath": "D:\\Tasks\\TestTasks\\Task2\\Task2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\tyuio\\AppData\\Roaming\\NuGet\\NuGet.Config",
