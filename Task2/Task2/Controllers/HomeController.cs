@@ -2,6 +2,7 @@
 using System.Linq;
 using Task2.ViewModels;
 using Task2.Helpers;
+using Task2.Models.FeedModels;
 
 namespace Task2.Controllers
 {
@@ -22,7 +23,7 @@ namespace Task2.Controllers
             // создание ViewModel
             FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
 
-            string result = Connector.GetResponse(Configurator.Settings.Feeds[0]);
+            Rss feed = Connector.GetRSSFeed(Configurator.Settings.Feeds[0]);
 
             return View(feedVm);
         }
