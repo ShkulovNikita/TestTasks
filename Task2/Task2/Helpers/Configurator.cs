@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.IO;
-using System.Diagnostics;
-using System.Xml.Serialization;
 using Task2.Models;
 
 namespace Task2.Helpers
@@ -37,23 +33,8 @@ namespace Task2.Helpers
         /// <returns>Настройки в виде объекта</returns>
         static public Config GetSettings()
         {
-            Config settings;
-
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Config));
-            try
-            {
-                using (FileStream fs = new FileStream(ConfigName, FileMode.OpenOrCreate))
-                {
-                    settings = xmlSerializer.Deserialize(fs) as Config;
-                }
-
-                return settings;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return null;
-            }
+            Config settings = Parser.ParseSettings(ConfigName);
+            return settings;
         }
 
         /// <summary>
@@ -118,22 +99,7 @@ namespace Task2.Helpers
         /// <returns>true - успешно, false - произошла ошибка</returns>
         static private bool UpdateConfigFile(Config settings)
         {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Config));
-
-            try
-            {
-                using (FileStream fs = new FileStream(ConfigName, FileMode.Create))
-                {
-                    xmlSerializer.Serialize(fs, settings);
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                return false;
-            }
+            return Parser.WriteSettings(ConfigName, settings);
         }
 
         /// <summary>

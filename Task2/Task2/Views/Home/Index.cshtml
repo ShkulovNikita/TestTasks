@@ -21,14 +21,17 @@
     <div class="col-4">
         @Html.CheckError(error)
         @Html.CheckSuccess(success)
-        <form method="post">
-            @foreach (string feed in Model.Feeds)
-            {
-                <input type="text" name="feedLink" value="@feed" class="feed-link" />
-            }
-            <input type="number" name="updateTime" value="@Model.UpdateTime" />
-            <input type="submit" class="btn btn-primary" value="Сохранить" />
-        </form>
+        @if (Model != null)
+        {
+            <form method="post">
+                @foreach (string feed in Model.Feeds)
+                {
+                    <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                }
+                <input type="number" name="updateTime" value="@Model.UpdateTime" />
+                <input type="submit" class="btn btn-primary" value="Сохранить" />
+            </form>
+        }
     </div>
 </div>
 

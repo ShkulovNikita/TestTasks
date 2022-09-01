@@ -16,11 +16,13 @@ namespace Task2.Controllers
             if (Configurator.Settings == null)
             {
                 TempData["Error"] = "Не удалось получить настройки из файла";
-                return View();
+                return View(null);
             }
 
             // создание ViewModel
             FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
+
+            string result = Connector.GetResponse(Configurator.Settings.Feeds[0]);
 
             return View(feedVm);
         }
@@ -44,7 +46,7 @@ namespace Task2.Controllers
             // создание обновленной ViewModel
             FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
 
-            return View(feedVm);
+            return RedirectToAction("Index");// View(feedVm);
         }
     }
 }
