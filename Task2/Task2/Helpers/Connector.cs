@@ -62,6 +62,7 @@ namespace Task2.Helpers
 
             // получить объект с лентой
             Rss feed = Parser.ParseRss(feedXml);
+
             return feed;
         }
 
