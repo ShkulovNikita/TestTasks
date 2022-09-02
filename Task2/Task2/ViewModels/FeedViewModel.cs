@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Task2.Models;
+using Task2.Models.FeedModels;
 
 namespace Task2.ViewModels
 {

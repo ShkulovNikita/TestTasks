@@ -3,6 +3,7 @@ using System.Linq;
 using Task2.ViewModels;
 using Task2.Helpers;
 using Task2.Models.FeedModels;
+using System.Collections.Generic;
 
 namespace Task2.Controllers
 {
@@ -20,10 +21,10 @@ namespace Task2.Controllers
                 return View(null);
             }
 
+            List<Rss> feeds = Connector.GetRSSFeeds(Configurator.Settings.Feeds);
+
             // создание ViewModel
             FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
-
-            Rss feed = Connector.GetRSSFeed(Configurator.Settings.Feeds[0]);
 
             return View(feedVm);
         }
@@ -34,7 +35,7 @@ namespace Task2.Controllers
         /// <param name="feedLink">Список выбранных лент</param>
         /// <param name="updateTime">Частота обновления</param>
         [HttpPost]
-        public IActionResult Index(string[] feedLink, int updateTime)
+        public IActionResult UpdateSettings(string[] feedLink, int updateTime)
         {
             // попытка обновления файла настроек
             string updateResult = Configurator.EditSettings(feedLink.ToList(), updateTime);
@@ -44,10 +45,7 @@ namespace Task2.Controllers
             else
                 TempData["Error"] = updateResult;
 
-            // создание обновленной ViewModel
-            FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
-
-            return RedirectToAction("Index");// View(feedVm);
+            return RedirectToAction("Index");
         }
     }
 }

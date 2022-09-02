@@ -18,19 +18,39 @@
 
 <div class="row">
     <!--Блок меню настроек-->
-    <div class="col-4">
+    <div class="col-12">
+        <!--Вывести сообщения, если есть-->
         @Html.CheckError(error)
         @Html.CheckSuccess(success)
+        
         @if (Model != null)
         {
-            <form method="post">
-                @foreach (string feed in Model.Feeds)
+            <!--Форма выбора ленты-->
+            <div class="col-8">
+                @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
                 {
-                    <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                    <label for="feed">Выберите ленту:</label>
+                    <select name="feed">
+                        <option value="none">----------</option>
+                        @foreach (string feed in Model.Feeds)
+                        {
+                            <option value="@feed">@feed</option>
+                        }
+                    </select>
                 }
-                <input type="number" name="updateTime" value="@Model.UpdateTime" />
-                <input type="submit" class="btn btn-primary" value="Сохранить" />
-            </form>
+            </div>
+            <!--Форма настроек-->
+            <div class="col-4">
+                @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
+                {
+                    @foreach (string feed in Model.Feeds)
+                    {
+                        <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                    }
+                    <input type="number" name="updateTime" value="@Model.UpdateTime" />
+                    <input type="submit" class="btn btn-primary" value="Сохранить" />
+                }
+            </div>
         }
     </div>
 </div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Task2.Models.FeedModels;
 
@@ -20,7 +21,16 @@ namespace Task2.Helpers
         {
             // объект клиента для выполнения запроса
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(url);
+
+            // проверка Url
+            try
+            {
+                client.BaseAddress = new Uri(url);
+            }
+            catch (Exception ex)
+            {
+                return "Произошла ошибка\r\n" + ex.Message;
+            }
 
             //добавление заголовка с указанием принимаемого формата - XML
             client.DefaultRequestHeaders.Accept.Add(
@@ -42,7 +52,7 @@ namespace Task2.Helpers
         /// </summary>
         /// <param name="feedUrl">Адрес RSS-ленты</param>
         /// <returns>Объект ленты с её статьями</returns>
-        static public Rss GetRSSFeed(string feedUrl)
+        static private Rss GetRSSFeed(string feedUrl)
         {
             // получить XML ленты от источника
             string feedXml = GetResponse(feedUrl);
@@ -53,6 +63,20 @@ namespace Task2.Helpers
             // получить объект с лентой
             Rss feed = Parser.ParseRss(feedXml);
             return feed;
+        }
+
+        /// <summary>
+        /// Получение указанных RSS-лент
+        /// </summary>
+        /// <param name="feedUrls">Ссылки на ленты</param>
+        /// <returns>Список с указанными лентами</returns>
+        static public List<Rss> GetRSSFeeds(List<string> feedUrls)
+        {
+            List<Rss> feeds = new List<Rss>();
+            foreach (string feedUrl in feedUrls)
+                feeds.Add(GetRSSFeed(feedUrl));
+
+            return feeds;
         }
     }
 }

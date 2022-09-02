@@ -2,8 +2,9 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Feeds>
     <string>https://habr.com/rss/interesting/</string>
+    <string>somebullshit</string>
   </Feeds>
-  <Update>30000</Update>
+  <Update>20000</Update>
   <Proxy>proxyaddress</Proxy>
   <Login>testlogin</Login>
   <Password>testpassword</Password>
