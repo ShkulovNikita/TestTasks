@@ -85,6 +85,15 @@ namespace Task2.Helpers
                     feed = (Rss)xmlSerializer.Deserialize(reader);
                 }
 
+                // проверки успешности получения данных
+                if (feed == null)
+                    return null;
+                if (feed.Channel == null)
+                    return null;
+
+                // преобразовать даты
+                TransformDates(feed.Channel);
+
                 return feed;
             }
             catch (Exception ex)
@@ -92,6 +101,30 @@ namespace Task2.Helpers
                 Debug.WriteLine(ex.Message);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Преобразовать даты статей канала
+        /// </summary>
+        /// <param name="channel">RSS-канал с его статьями</param>
+        static private void TransformDates(Channel channel)
+        {
+            foreach (Item item in channel.Items)
+            {
+                item.PubDate = TransformDate(item.PubDate);
+            }
+        }
+
+        /// <summary>
+        /// Преобразовать исходный формат даты с переводом на русский
+        /// </summary>
+        /// <param name="date">Исходная дата</param>
+        /// <returns>Преобразованная дата</returns>
+        static private string TransformDate(string date)
+        {
+            DateTime transformedDate = DateTime.Parse(date);
+            string newdate = transformedDate.ToString("F");
+            return newdate;
         }
 
         /// <summary>
