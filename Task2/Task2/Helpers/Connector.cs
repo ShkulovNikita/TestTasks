@@ -52,7 +52,7 @@ namespace Task2.Helpers
         /// </summary>
         /// <param name="feedUrl">Адрес RSS-ленты</param>
         /// <returns>Объект ленты с её статьями</returns>
-        static private Rss GetRSSFeed(string feedUrl)
+        static public Rss GetRSSFeed(string feedUrl)
         {
             // получить XML ленты от источника
             string feedXml = GetResponse(feedUrl);

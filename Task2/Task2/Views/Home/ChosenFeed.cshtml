@@ -1,37 +1,36 @@
-﻿<!--
-    Частичное представление для вывода 
-    статей выбранной RSS-ленты
--->
-
-@model Channel;
+﻿@model Channel;
 
 @using Task2.HtmlHelpers;
-@using Task2.Models.FeedModels; 
+@using Task2.Models.FeedModels;
 
-@if (Model == null)
-{
-    @Html.CheckError("Не удалось загрузить статьи выбранной ленты")
-}
-else if (Model.Items.Count == 0)
-{
-    @Html.CheckError("Не найдено статей в выбранной ленте")
-}
-else
-{
-    <h3>RSS-канал: @Model.Title</h3>
-    <h4>Описание: @Model.Description</h4>
-    <hr />
-    @foreach (Item article in Model.Items)
+<div class="rss-feed">
+    @if (Model == null)
     {
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">
-                    @article.Title
-                </h5>
-                <a href="@article.Link">Ссылка на статью</a>
-                <span>@article.PubDate</span>
-                <span>@article.Description</span>
-            </div>
-        </div>
+        @Html.CheckError("Не удалось загрузить статьи выбранной ленты")
     }
-}
+    else if (Model.Items.Count == 0)
+    {
+        @Html.CheckError("Не найдено статей в выбранной ленте")
+    }
+    else
+    {
+        <h3>RSS-канал: @Model.Title</h3>
+        <h4>Описание: @Model.Description</h4>
+        <hr />
+        @foreach (Item article in Model.Items)
+        {
+            <div class="card">
+                <div class="card-header">
+                    @article.PubDate
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">
+                        @article.Title
+                    </h5>
+                    <a href="@article.Link" target="_blank">Ссылка на статью</a>
+                    <p>@article.Description</p>
+                </div>
+            </div>
+        }
+    }
+</div>

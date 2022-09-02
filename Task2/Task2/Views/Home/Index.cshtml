@@ -1,5 +1,5 @@
 ﻿@using Task2.ViewModels;
-@using Task2.HtmlHelpers; 
+@using Task2.HtmlHelpers;
 
 @model FeedViewModel;
 
@@ -19,7 +19,7 @@
 <div class="row">
     @if (Model != null)
     {
-        <!--Блок лент-->
+        <!--Блок ленты-->
         <div class="col-8">
             <!--Блок сообщений-->
             @Html.CheckError(error)
@@ -29,14 +29,17 @@
             @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
             {
                 <label for="feed">Выберите ленту:</label>
-                <select name="feed">
-                    <option value="none">----------</option>
-                    @foreach (string feed in Model.Feeds)
+                <select id="chosen-feed" name="feed">
+                    <option value="0">----------</option>
+                    @for (int i = 0; i < Model.Feeds.Count; i++)
                     {
-                        <option value="@feed">@feed</option>
+                        <option value="@(i + 1)">@Model.Feeds[i]</option>
                     }
                 </select>
             }
+
+            <!--Лента-->
+            <div class="rss-feed"></div>
         </div>
         <!--Блок настроек-->
         <div class="col-4">
@@ -60,3 +63,21 @@
     }
 </div>
 
+@section scripts {
+    <script type="text/javascript">
+        // выбор ленты из выпадающего списка
+        $(function () {
+            $('#chosen-feed').change(function () {
+                // получение выбранной ленты
+                var chosenFeed = $('#chosen-feed').val() - 1;
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
+                    success: function (data) {
+                        $('.rss-feed').replaceWith(data);
+                    }
+                });
+            });
+    })
+    </script>
+}

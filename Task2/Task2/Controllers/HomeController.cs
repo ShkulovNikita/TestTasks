@@ -11,6 +11,10 @@ namespace Task2.Controllers
     {
         public HomeController() { }
 
+        /// <summary>
+        /// Отображение главной страницы приложения
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             //попытка получить настройки из файла
@@ -46,6 +50,28 @@ namespace Task2.Controllers
                 TempData["Error"] = updateResult;
 
             return RedirectToAction("Index");
+        }
+
+        /// <summary>
+        /// Вывод частичного представления со статьями выбранной RSS-ленты
+        /// </summary>
+        /// <param name="feed">Выбранная лента</param>
+        public IActionResult ChosenFeed(int feed)
+        {
+            string feedUrl;
+            if ((feed < Configurator.Settings.Feeds.Count) || (feed > 0))
+                // ссылка на ленту по её номеру
+                feedUrl = Configurator.Settings.Feeds[feed];
+            else
+                // некорректный номер
+                return PartialView(null);
+
+            // получить указанную ленту
+            Rss rss = Connector.GetRSSFeed(feedUrl);
+            if (rss == null)
+                return PartialView(null);
+            else
+                return PartialView(rss.Channel);
         }
     }
 }
