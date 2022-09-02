@@ -17,41 +17,46 @@
 }
 
 <div class="row">
-    <!--Блок меню настроек-->
-    <div class="col-12">
-        <!--Вывести сообщения, если есть-->
-        @Html.CheckError(error)
-        @Html.CheckSuccess(success)
-        
-        @if (Model != null)
-        {
+    @if (Model != null)
+    {
+        <!--Блок лент-->
+        <div class="col-8">
+            <!--Блок сообщений-->
+            @Html.CheckError(error)
+            @Html.CheckSuccess(success)
+
             <!--Форма выбора ленты-->
-            <div class="col-8">
-                @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
-                {
-                    <label for="feed">Выберите ленту:</label>
-                    <select name="feed">
-                        <option value="none">----------</option>
-                        @foreach (string feed in Model.Feeds)
-                        {
-                            <option value="@feed">@feed</option>
-                        }
-                    </select>
-                }
-            </div>
-            <!--Форма настроек-->
-            <div class="col-4">
-                @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
-                {
+            @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
+            {
+                <label for="feed">Выберите ленту:</label>
+                <select name="feed">
+                    <option value="none">----------</option>
                     @foreach (string feed in Model.Feeds)
                     {
-                        <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                        <option value="@feed">@feed</option>
                     }
-                    <input type="number" name="updateTime" value="@Model.UpdateTime" />
-                    <input type="submit" class="btn btn-primary" value="Сохранить" />
+                </select>
+            }
+        </div>
+        <!--Блок настроек-->
+        <div class="col-4">
+            @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
+            {
+                @foreach (string feed in Model.Feeds)
+                {
+                    <input type="text" name="feedLink" value="@feed" class="feed-link" />
                 }
-            </div>
-        }
-    </div>
+                <input type="number" name="updateTime" value="@Model.UpdateTime" />
+                <input type="submit" class="btn btn-primary" value="Сохранить" />
+            }
+        </div>
+    }
+    else
+    {
+        <!--Вывести ошибку, из-за которой не удалось загрузить страницу-->
+        <div class="col-12">
+            @Html.CheckError(error)
+        </div>
+    }
 </div>
 

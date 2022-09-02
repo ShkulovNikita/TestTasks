@@ -4,7 +4,7 @@
     <string>https://habr.com/rss/interesting/</string>
     <string>somebullshit</string>
   </Feeds>
-  <Update>20000</Update>
+  <Update>20005</Update>
   <Proxy>proxyaddress</Proxy>
   <Login>testlogin</Login>
   <Password>testpassword</Password>
