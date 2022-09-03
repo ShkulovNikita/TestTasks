@@ -14,6 +14,11 @@
     string error = null;
     if (TempData["Error"] != null)
         error = TempData["Error"].ToString();
+
+    // получить частоту обновления из модели, если есть
+    int updateTime = -1;
+    if (Model != null)
+        updateTime = Model.UpdateTime;
 }
 
 <div class="row">
@@ -65,19 +70,64 @@
 
 @section scripts {
     <script type="text/javascript">
+        // флаг, указывающий, выбрал ли уже пользователь ленту
+        var feedIsChosen = false;
+
         // выбор ленты из выпадающего списка
         $(function () {
             $('#chosen-feed').change(function () {
                 // получение выбранной ленты
                 var chosenFeed = $('#chosen-feed').val() - 1;
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
-                    success: function (data) {
-                        $('.rss-feed').replaceWith(data);
-                    }
-                });
+
+                // указать, что пользователем была выбрана некоторая лента
+                if (chosenFeed != -1)
+                    feedIsChosen = true;
+                else
+                    feedIsChosen = false;
+
+                if (feedIsChosen) {
+                    // выполнить запрос для получения RSS-ленты
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
+                        success: function (data) {
+                            $('.rss-feed').replaceWith(data);
+                        }
+                    });
+                }
             });
-    })
+        })
+
+        // периодическое обновление ленты
+        $(function updater() {
+            // функция будет срабатывать, только если была успешно загружена модель
+            if (@updateTime > 0) {
+                if (feedIsChosen == true) {
+                    // получение выбранной ленты
+                    var chosenFeed = $('#chosen-feed').val() - 1;
+
+                    if (feedIsChosen) {
+                        // выполнить запрос для получения RSS-ленты
+                        // и установить период обновления для повторного запроса
+                        $.ajax({
+                            type: 'GET',
+                            url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
+                            success: function (data) {
+                                $('.rss-feed').replaceWith(data);
+                            },
+                            complete: function () {
+                                console.log('done2');
+                                setTimeout(updater, @updateTime);
+                            }
+                        });
+                    }
+                }
+                else {
+                    console.log('done3');
+                    setTimeout(updater, @updateTime);
+                }
+            }
+        });
+
     </script>
 }

@@ -6,7 +6,8 @@
 <div class="rss-feed">
     @if (Model == null)
     {
-        @Html.CheckError("Не удалось загрузить статьи выбранной ленты")
+        <!--Если ничего не выбрано, то ничего не отображать-->
+        <div></div>
     }
     else if (Model.Items.Count == 0)
     {
@@ -15,7 +16,10 @@
     else
     {
         <h3>RSS-канал: @Model.Title</h3>
-        <h4>Описание: @Model.Description</h4>
+        @if (Model.Description != "")
+        {
+            <h4>Описание: @Model.Description</h4>
+        }
         <hr />
         @foreach (Item article in Model.Items)
         {
@@ -25,10 +29,10 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">
-                        @article.Title
+                        <a href="@article.Link" target="_blank">@article.Title</a>
                     </h5>
-                    <a href="@article.Link" target="_blank">Ссылка на статью</a>
-                    <p>@article.Description</p>
+                    <p class="open-description">Описание</p>
+                    <p class="article-description">@article.Description</p>
                 </div>
             </div>
         }

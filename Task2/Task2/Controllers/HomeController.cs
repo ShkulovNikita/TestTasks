@@ -25,7 +25,14 @@ namespace Task2.Controllers
                 return View(null);
             }
 
-            List<Rss> feeds = Connector.GetRSSFeeds(Configurator.Settings.Feeds);
+            // проверка подключения к прокси-серверу посредством
+            // тестового запроса к некоторой RSS-ленте
+            string proxyResult = Connector.TestProxyConnection("https://habr.com/rss/interesting/");
+            if (proxyResult != "ok")
+            {
+                TempData["Error"] = proxyResult;
+                return View(null);
+            }
 
             // создание ViewModel
             FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
@@ -59,11 +66,11 @@ namespace Task2.Controllers
         public IActionResult ChosenFeed(int feed)
         {
             string feedUrl;
-            if ((feed < Configurator.Settings.Feeds.Count) || (feed > 0))
+            if ((feed < Configurator.Settings.Feeds.Count) && (feed >= 0))
                 // ссылка на ленту по её номеру
                 feedUrl = Configurator.Settings.Feeds[feed];
             else
-                // некорректный номер
+                // некорректный номер либо не выбрано ничего
                 return PartialView(null);
 
             // получить указанную ленту

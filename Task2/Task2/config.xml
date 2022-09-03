@@ -4,8 +4,8 @@
     <string>https://habr.com/rss/interesting/</string>
     <string>somebullshit</string>
   </Feeds>
-  <Update>20008</Update>
-  <Proxy>proxyaddress</Proxy>
-  <Login>testlogin</Login>
-  <Password>testpassword</Password>
+  <Update>6000</Update>
+  <Proxy>http://***.***.**.**:****</Proxy>
+  <Login>********</Login>
+  <Password>********</Password>
 </Config>

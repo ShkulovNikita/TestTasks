@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Task2.Models.FeedModels;
+using System.Net;
+using System.Diagnostics;
 
 namespace Task2.Helpers
 {
@@ -18,9 +20,10 @@ namespace Task2.Helpers
         /// <param name="url">URL-адрес ленты</param>
         /// <returns>RSS-лента в формате XML</returns>
         static private string GetResponse(string url)
-        {
-            // объект клиента для выполнения запроса
-            HttpClient client = new HttpClient();
+        {           
+            HttpClientHandler handler = CreateHandler();
+
+            HttpClient client = new HttpClient(handler: handler, disposeHandler: true);
 
             // проверка Url
             try
@@ -45,6 +48,71 @@ namespace Task2.Helpers
             //произошла ошибка
             else
                 return "Произошла ошибка\r\n" + response.StatusCode.ToString() + ": " + response.ReasonPhrase;
+        }
+
+        /// <summary>
+        /// Создать объект обработчика для выполнения запроса к RSS
+        /// </summary>
+        /// <returns></returns>
+        static private HttpClientHandler CreateHandler()
+        {
+            // создание объекта, содержащего данные для подключения к прокси-серверу
+            WebProxy proxy = GetProxy();
+
+            if (proxy != null)
+            {
+                HttpClientHandler httpClientHandler = new HttpClientHandler()
+                {
+                    Proxy = proxy,
+                };
+
+                return httpClientHandler;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Получение данных, необходимых для подключения к прокси-серверу
+        /// </summary>
+        /// <returns></returns>
+        static private WebProxy GetProxy()
+        {
+            try
+            {
+                var proxy = new WebProxy
+                {
+                    Address = new Uri(Configurator.Settings.Proxy),
+                    BypassProxyOnLocal = false,
+                    UseDefaultCredentials = false,
+
+                    Credentials = new NetworkCredential(
+                    userName: Configurator.Settings.Login,
+                    password: Configurator.Settings.Password)
+                };
+
+                return proxy;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Проверить возможность подключения к лентам через прокси-сервер
+        /// </summary>
+        /// <param name="testUrl">Ссылка на некоторую ленту, являющаяся заведомо правильной</param>
+        /// <returns>ok либо полученная ошибка</returns>
+        static public string TestProxyConnection(string testUrl)
+        {
+            string response = GetResponse(testUrl);
+
+            if (response.Contains("Произошла ошибка"))
+                return "Невозможно подключиться к прокси-серверу. Проверьте адрес сервера и учетные данные для подключения";
+            else
+                return "ok";
         }
 
         /// <summary>
