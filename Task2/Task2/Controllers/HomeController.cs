@@ -14,7 +14,6 @@ namespace Task2.Controllers
         /// <summary>
         /// Отображение главной страницы приложения
         /// </summary>
-        /// <returns></returns>
         public IActionResult Index()
         {
             //попытка получить настройки из файла

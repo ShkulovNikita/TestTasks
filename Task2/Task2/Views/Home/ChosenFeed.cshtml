@@ -31,8 +31,10 @@
                     <h5 class="card-title">
                         <a href="@article.Link" target="_blank">@article.Title</a>
                     </h5>
-                    <p class="open-description">Описание</p>
-                    <p class="article-description">@article.Description</p>
+                    <a class="btn btn-primary" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
+                    <div class="collapse" id="article_@article.ArticleId">
+                        <p class="article-description">@article.Description</p>
+                    </div>
                 </div>
             </div>
         }

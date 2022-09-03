@@ -23,5 +23,18 @@
         /// Дата публикации
         /// </summary>
         public string PubDate { get; set; }
+
+        /// <summary>
+        /// Внутренний идентификатор в системе
+        /// </summary>
+        public string ArticleId { get; set; }
+
+        /// <summary>
+        /// Сформировать внутренний идентификатор статьи
+        /// </summary>
+        public void CreateId ()
+        {
+            ArticleId = string.Concat(Title, PubDate).GetHashCode().ToString();
+        }
     }
 }

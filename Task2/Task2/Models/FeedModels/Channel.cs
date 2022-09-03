@@ -26,6 +26,17 @@ namespace Task2.Models.FeedModels
         /// Статьи канала
         /// </summary>
         [XmlElement("Item")]
-        public List<Item> Items { get; set; }
+        public List<Item> Items { get; set; } = new List<Item>();
+
+        /// <summary>
+        /// Сформировать внутренние идентификаторы статей
+        /// </summary>
+        public void CreateItemIds ()
+        {
+            foreach (Item item in Items)
+            {
+                item.CreateId();
+            }
+        }
     }
 }

@@ -23,6 +23,11 @@ namespace Task2.Helpers
         {           
             HttpClientHandler handler = CreateHandler();
 
+            if (handler == null)
+            {
+                return "Произошла ошибка\r\n";
+            }
+
             HttpClient client = new HttpClient(handler: handler, disposeHandler: true);
 
             // проверка Url
@@ -130,6 +135,11 @@ namespace Task2.Helpers
 
             // получить объект с лентой
             Rss feed = Parser.ParseRss(feedXml);
+
+            // если есть статьи, то сформировать для них идентификаторы
+            if (feed != null)
+                if (feed.Channel != null)
+                    feed.Channel.CreateItemIds();
 
             return feed;
         }
