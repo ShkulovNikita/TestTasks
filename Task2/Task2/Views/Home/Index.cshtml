@@ -33,7 +33,7 @@
             <!--Форма выбора ленты-->
             @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
             {
-                <label for="feed">Выберите ленту:</label>
+                <label for="feed">RSS-лента:</label>
                 <select id="chosen-feed" name="feed">
                     <option value="0">----------</option>
                     @for (int i = 0; i < Model.Feeds.Count; i++)
@@ -50,10 +50,18 @@
         <div class="col-4">
             @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
             {
-                @foreach (string feed in Model.Feeds)
-                {
-                    <input type="text" name="feedLink" value="@feed" class="feed-link" />
-                }
+                <label>Ленты</label>
+                <div id="settings-feeds">
+
+                    @foreach (string feed in Model.Feeds)
+                    {
+                    <div class="feed-field">
+                        <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                        <button type="button" class="btn btn-danger remove-feed">-</button>
+                    </div>
+                    }
+                    <button type="button" class="btn btn-success add-feed">Добавить ленту</button>
+                </div>
                 <input type="number" name="updateTime" value="@Model.UpdateTime" />
                 <input type="submit" class="btn btn-primary" value="Сохранить" />
             }
@@ -85,7 +93,7 @@
                 else
                     feedIsChosen = false;
 
-                if (feedIsChosen) {
+                
                     // выполнить запрос для получения RSS-ленты
                     $.ajax({
                         type: 'GET',
@@ -94,7 +102,6 @@
                             $('.rss-feed').replaceWith(data);
                         }
                     });
-                }
             });
         })
 
@@ -116,18 +123,45 @@
                                 $('.rss-feed').replaceWith(data);
                             },
                             complete: function () {
-                                console.log('done2');
                                 setTimeout(updater, @updateTime);
                             }
                         });
                     }
                 }
                 else {
-                    console.log('done3');
                     setTimeout(updater, @updateTime);
                 }
             }
         });
 
+        // добавление новой ленты
+        $('#settings-feeds').on('click', '.add-feed', function () {
+            // получить уже существующее поле для копирования
+            var feedFieldTemplate = $('.feed-field:last');
+
+            // добавить копию
+            $(feedFieldTemplate).clone().appendTo('#settings-feeds').find("input[type='text']").val("");
+
+            // переместить кнопку добавления в конец
+            $(this).appendTo('#settings-feeds');
+        });
+
+        // удаление выбранной ленты
+        $('#settings-feeds').on('click', '.remove-feed', function () {
+            // проверить, сколько осталось полей для ввода ссылок ленты
+            var amountLeft = $('.feed-field').length;
+
+            // удалять, только если останется ещё хотя бы одно поле
+            if (amountLeft > 1) {
+                // получить поле с выбранной лентой
+                var parentDiv = $(this).closest('.feed-field');
+
+                parentDiv.remove();
+            }
+            // в противном случае просто очистить
+            else {
+                $(this).closest('.feed-field').find("input[type='text']").val("");
+            }
+        });
     </script>
 }

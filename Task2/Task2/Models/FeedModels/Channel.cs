@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace Task2.Models.FeedModels
 {
@@ -37,6 +38,16 @@ namespace Task2.Models.FeedModels
             {
                 item.CreateId();
             }
+        }
+
+        /// <summary>
+        /// Получение списка идентификаторов статей канала
+        /// </summary>
+        /// <returns>Список с идентификаторами статей</returns>
+        public List<string> GetItemsIds()
+        {
+            List<string> result = Items.Select(i => i.ArticleId).ToList();
+            return result;
         }
     }
 }

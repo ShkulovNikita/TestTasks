@@ -3,9 +3,21 @@
 @using Task2.HtmlHelpers;
 @using Task2.Models.FeedModels;
 
+@{
+    string error = null;
+    if (TempData["ErrorPartial"] != null)
+        error = TempData["ErrorPartial"].ToString();
+
+    string message = null;
+    if (TempData["MessagePartial"] != null)
+        message = TempData["MessagePartial"].ToString();
+}
+
 <div class="rss-feed">
     @if (Model == null)
     {
+        @Html.CheckMessage(message)
+        @Html.CheckError(error)
         <!--Если ничего не выбрано, то ничего не отображать-->
         <div></div>
     }

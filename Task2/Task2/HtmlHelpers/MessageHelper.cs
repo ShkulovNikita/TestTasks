@@ -60,7 +60,7 @@ namespace Task2.HtmlHelpers
         /// <returns>HTML-элемент с сообщением</returns>
         static public HtmlString CheckSuccess(this IHtmlHelper html, string message)
         {
-            TagBuilder successDiv = CreateInfoDiv("danger", message);
+            TagBuilder successDiv = CreateInfoDiv("success", message);
             if (successDiv == null)
                 return null;
             else
@@ -79,7 +79,7 @@ namespace Task2.HtmlHelpers
         /// <param name="message">Текст сообщения</param>
         static public HtmlString CheckMessage(this IHtmlHelper html, string message)
         {
-            TagBuilder infoDiv = CreateInfoDiv("danger", message);
+            TagBuilder infoDiv = CreateInfoDiv("info", message);
             if (infoDiv == null)
                 return null;
             else

@@ -69,15 +69,29 @@ namespace Task2.Controllers
                 // ссылка на ленту по её номеру
                 feedUrl = Configurator.Settings.Feeds[feed];
             else
+            {
+                TempData["MessagePartial"] = "Выберите ленту";
                 // некорректный номер либо не выбрано ничего
                 return PartialView(null);
-
+            }
+                
             // получить указанную ленту
             Rss rss = Connector.GetRSSFeed(feedUrl);
             if (rss == null)
+            {
+                TempData["ErrorPartial"] = "Не удалось получить RSS-ленту";
                 return PartialView(null);
+            }
+            else if (rss.Channel == null)
+            {
+                TempData["ErrorPartial"] = "Не удалось получить RSS-ленту";
+                return PartialView(null);
+            }
             else
+            {
                 return PartialView(rss.Channel);
+            }    
+                
         }
     }
 }
