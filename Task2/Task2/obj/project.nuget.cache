@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "6IVt+9EZ0g+oVCHo4B9ZXBwu8kgtxtNZTzOYBitacgC9gngI7k9Rrsc+SXXTXfQXdTq2p/ZXcDrWyor31TXELA==",
+  "dgSpecHash": "9HteysJJ9OykxPU3575KA5Cz78oIkcF4iRMu1OK+z/GqVv4yyjYkd4LpfpWXFUvI7WgbwbPaj2rE9n8eUR2LwQ==",
   "success": true,
   "projectFilePath": "D:\\Tasks\\TestTasks\\Task2\\Task2\\Task2.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\tyuio\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
   "logs": []
 }

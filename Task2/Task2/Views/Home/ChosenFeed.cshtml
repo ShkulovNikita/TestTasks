@@ -2,8 +2,10 @@
 
 @using Task2.HtmlHelpers;
 @using Task2.Models.FeedModels;
+@using Microsoft.AspNetCore.Http;
 
 @{
+    // сообщения со стороны сервера (ошибки или информация)
     string error = null;
     if (TempData["ErrorPartial"] != null)
         error = TempData["ErrorPartial"].ToString();
@@ -11,6 +13,11 @@
     string message = null;
     if (TempData["MessagePartial"] != null)
         message = TempData["MessagePartial"].ToString();
+
+    // получить выбранный формат вывода описания статей
+    bool formatted = false;
+    if (Context.Session.GetString("format") == "True")
+        formatted = true;
 }
 
 <div class="rss-feed">
@@ -45,7 +52,16 @@
                     </h5>
                     <a class="btn btn-primary" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
                     <div class="collapse" id="article_@article.ArticleId">
-                        <p class="article-description">@article.Description</p>
+                        <div class="article-description">
+                            @if (formatted)
+                            {
+                                @Html.Raw(@article.Description)
+                            }
+                            else
+                            {
+                                @article.Description
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

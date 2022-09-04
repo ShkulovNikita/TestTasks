@@ -1,5 +1,6 @@
 ﻿@using Task2.ViewModels;
 @using Task2.HtmlHelpers;
+@using Microsoft.AspNetCore.Http;
 
 @model FeedViewModel;
 
@@ -19,6 +20,11 @@
     int updateTime = -1;
     if (Model != null)
         updateTime = Model.UpdateTime;
+
+    // получить выбранный формат вывода описания
+    bool formatted = false;
+    if (Context.Session.GetString("format") == "True")
+        formatted = true;
 }
 
 <div class="row">
@@ -50,19 +56,36 @@
         <div class="col-4">
             @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
             {
+                <!--Поля для ввода ссылок на RSS-ленты-->
                 <label>Ленты</label>
                 <div id="settings-feeds">
 
                     @foreach (string feed in Model.Feeds)
                     {
-                    <div class="feed-field">
-                        <input type="text" name="feedLink" value="@feed" class="feed-link" />
-                        <button type="button" class="btn btn-danger remove-feed">-</button>
-                    </div>
+                        <div class="feed-field">
+                            <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                            <button type="button" class="btn btn-danger remove-feed">-</button>
+                        </div>
                     }
                     <button type="button" class="btn btn-success add-feed">Добавить ленту</button>
                 </div>
+
+                <!--Периодичность обновления лент-->
                 <input type="number" name="updateTime" value="@Model.UpdateTime" />
+
+                <!--Форматирование описаний статей по тегам-->
+                <label>Вывод описания</label>
+                @if (formatted)
+                {
+                    <input type="radio" name="format" value="false" /><span>Без форматирования</span><br />
+                    <input type="radio" name="format" value="true" checked /><span>С форматированием</span><br />
+                }
+                else
+                {
+                    <input type="radio" name="format" value="false" checked /><span>Без форматирования</span><br />
+                    <input type="radio" name="format" value="true" /><span>С форматированием</span><br />
+                }
+
                 <input type="submit" class="btn btn-primary" value="Сохранить" />
             }
         </div>
@@ -93,17 +116,21 @@
                 else
                     feedIsChosen = false;
 
-                
-                    // выполнить запрос для получения RSS-ленты
-                    $.ajax({
-                        type: 'GET',
-                        url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
-                        success: function (data) {
-                            $('.rss-feed').replaceWith(data);
-                        }
-                    });
+                // выполнить запрос для получения RSS-ленты
+                getFeed(chosenFeed);
             });
         })
+
+        // запрос получения RSS-ленты
+        function getFeed(chosenFeed) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
+                success: function (data) {
+                    $('.rss-feed').replaceWith(data);
+                }
+            });
+        }
 
         // периодическое обновление ленты
         $(function updater() {

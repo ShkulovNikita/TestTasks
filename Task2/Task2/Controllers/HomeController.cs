@@ -4,6 +4,7 @@ using Task2.ViewModels;
 using Task2.Helpers;
 using Task2.Models.FeedModels;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace Task2.Controllers
 {
@@ -45,7 +46,7 @@ namespace Task2.Controllers
         /// <param name="feedLink">Список выбранных лент</param>
         /// <param name="updateTime">Частота обновления</param>
         [HttpPost]
-        public IActionResult UpdateSettings(string[] feedLink, int updateTime)
+        public IActionResult UpdateSettings(string[] feedLink, int updateTime, bool format)
         {
             // попытка обновления файла настроек
             string updateResult = Configurator.EditSettings(feedLink.ToList(), updateTime);
@@ -54,6 +55,9 @@ namespace Task2.Controllers
                 TempData["Success"] = "Настройки успешно обновлены";
             else
                 TempData["Error"] = updateResult;
+
+            // сохранить форматирование описания в сессию
+            HttpContext.Session.SetString("format", format.ToString());
 
             return RedirectToAction("Index");
         }

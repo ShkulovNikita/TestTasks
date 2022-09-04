@@ -69,3 +69,15 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.article-description {
+
+}
+
+/* Изображения в статьях при форматированном описании */
+img {
+    vertical-align: middle;
+    border-style: none;
+    width: 100%;
+    object-fit: cover;
+}

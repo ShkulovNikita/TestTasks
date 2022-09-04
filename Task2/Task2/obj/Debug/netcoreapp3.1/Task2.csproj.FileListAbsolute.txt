@@ -35,3 +35,4 @@ D:\Tasks\TestTasks\Task2\Task2\obj\Debug\netcoreapp3.1\Task2.pdb
 D:\Tasks\TestTasks\Task2\Task2\obj\Debug\netcoreapp3.1\Task2.genruntimeconfig.cache
 D:\Tasks\TestTasks\Task2\Task2\obj\Debug\netcoreapp3.1\Task2.csproj.CopyComplete
 D:\Tasks\TestTasks\Task2\Task2\obj\Debug\netcoreapp3.1\Razor\Views\Home\ChosenFeed.cshtml.g.cs
+D:\Tasks\TestTasks\Task2\Task2\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
