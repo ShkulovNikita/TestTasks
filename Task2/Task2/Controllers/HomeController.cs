@@ -63,6 +63,30 @@ namespace Task2.Controllers
         }
 
         /// <summary>
+        /// Вывод частичного представления с выбранными для отображения RSS-лентами
+        /// </summary>
+        public IActionResult RssFeeds()
+        {
+            // не выбрано ни одной ленты
+            if ((Configurator.Settings.Feeds.Count == 0))
+            {
+                TempData["MessagePartial"] = "Не выбраны ленты для отображения";
+                return null;
+            }
+            // единственная лента - пустая
+            if (Configurator.Settings.Feeds[0] == "")
+            {
+                TempData["MessagePartial"] = "Не выбраны ленты для отображения";
+                return null;
+            }
+
+            // получить ленты
+            List<Channel> feeds = Connector.GetRssChannels(Configurator.Settings.Feeds);
+
+            return PartialView(feeds);
+        }
+
+        /// <summary>
         /// Вывод частичного представления со статьями выбранной RSS-ленты
         /// </summary>
         /// <param name="feed">Выбранная лента</param>

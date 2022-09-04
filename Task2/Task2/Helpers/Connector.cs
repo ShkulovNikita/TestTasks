@@ -30,7 +30,6 @@ namespace Task2.Helpers
 
             HttpClient client = new HttpClient(handler: handler, disposeHandler: true);
 
-            // проверка Url
             try
             {
                 client.BaseAddress = new Uri(url);
@@ -44,15 +43,24 @@ namespace Task2.Helpers
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/xml"));
 
-            //получение ответа от API
-            HttpResponseMessage response = client.GetAsync("").Result;
+            try
+            {
+                //получение ответа от API
+                HttpResponseMessage response = client.GetAsync("").Result;
 
-            //ответ успешно получен
-            if (response.IsSuccessStatusCode)
-                return response.Content.ReadAsStringAsync().Result;
-            //произошла ошибка
-            else
-                return "Произошла ошибка\r\n" + response.StatusCode.ToString() + ": " + response.ReasonPhrase;
+                //ответ успешно получен
+                if (response.IsSuccessStatusCode)
+                    return response.Content.ReadAsStringAsync().Result;
+                //произошла ошибка
+                else
+                    return "Произошла ошибка\r\n" + response.StatusCode.ToString() + ": " + response.ReasonPhrase;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return "Произошла ошибка\r\n" + ex.Message;
+            }
+            
         }
 
         /// <summary>
@@ -154,6 +162,40 @@ namespace Task2.Helpers
             List<Rss> feeds = new List<Rss>();
             foreach (string feedUrl in feedUrls)
                 feeds.Add(GetRSSFeed(feedUrl));
+
+            return feeds;
+        }
+
+        /// <summary>
+        /// Получение указанных RSS-лент
+        /// </summary>
+        /// <param name="feedUrls">Ссылки на ленты</param>
+        /// <returns>Список с указанными лентами</returns>
+        static public List<Channel> GetRssChannels(List<string> feedUrls)
+        {
+            List<Channel> feeds = new List<Channel>();
+            foreach (string feedUrl in feedUrls)
+            {
+                // получение очередной ленты
+                Rss rss = GetRSSFeed(feedUrl);
+
+                // проверить, что объект RSS был действительно получен
+                if (rss != null)
+                {
+                    // проверить наличие в нем канала с лентой
+                    if (rss.Channel != null)
+                        // добавить данный канал в общий список
+                        feeds.Add(rss.Channel);
+                    else
+                        // если ничего не получено,
+                        // то создать "пустой" канал для указанной ссылки
+                        feeds.Add(new Channel { ConnectionLink = feedUrl });
+                }
+                // если не был получен - создать пустой объект,
+                // чтобы представление "знало" о нем
+                else
+                    feeds.Add(new Channel { ConnectionLink = feedUrl });
+            }
 
             return feeds;
         }

@@ -35,10 +35,6 @@
     else
     {
         <h3>RSS-канал: @Model.Title</h3>
-        @if (Model.Description != "")
-        {
-            <h4>Описание: @Model.Description</h4>
-        }
         <hr />
         @foreach (Item article in Model.Items)
         {

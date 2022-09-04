@@ -19,11 +19,6 @@ namespace Task2.Models.FeedModels
         public string Link { get; set; }
 
         /// <summary>
-        /// Описание канала
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// Статьи канала
         /// </summary>
         [XmlElement("Item")]
@@ -49,5 +44,10 @@ namespace Task2.Models.FeedModels
             List<string> result = Items.Select(i => i.ArticleId).ToList();
             return result;
         }
+
+        /// <summary>
+        /// Ссылка на ленту, используемая при подключении
+        /// </summary>
+        public string ConnectionLink { get; set; }
     }
 }

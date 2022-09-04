@@ -31,12 +31,13 @@
     @if (Model != null)
     {
         <!--Блок ленты-->
-        <div class="col-8">
+        <div class="col-9">
             <!--Блок сообщений-->
             @Html.CheckError(error)
             @Html.CheckSuccess(success)
 
             <!--Форма выбора ленты-->
+            <!--Необходима для небольших экранов-->
             @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
             {
                 <label for="feed">RSS-лента:</label>
@@ -53,7 +54,7 @@
             <div class="rss-feed"></div>
         </div>
         <!--Блок настроек-->
-        <div class="col-4">
+        <div class="col-3">
             @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
             {
                 <!--Поля для ввода ссылок на RSS-ленты-->
@@ -131,6 +132,22 @@
                 }
             });
         }
+
+        // запрос получения выбранных пользователем лент
+        function getFeeds() {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("RssFeeds")',
+                success: function (data) {
+                    $('.rss-feed').replaceWith(data);
+                }
+            });
+        }
+
+        // получить ленты после полной загрузки страницы
+        $(window).on('load', function () {
+            getFeeds();
+        });
 
         // периодическое обновление ленты
         $(function updater() {

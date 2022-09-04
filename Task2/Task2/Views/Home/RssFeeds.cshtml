@@ -1,0 +1,106 @@
+﻿@model List<Channel>;
+
+@using Task2.HtmlHelpers;
+@using Task2.Models.FeedModels;
+@using Microsoft.AspNetCore.Http;
+
+@{
+    // сообщения со стороны сервера (ошибки или информация)
+    string error = null;
+    if (TempData["ErrorPartial"] != null)
+        error = TempData["ErrorPartial"].ToString();
+
+    string message = null;
+    if (TempData["MessagePartial"] != null)
+        message = TempData["MessagePartial"].ToString();
+
+    // получить выбранный формат вывода описания статей
+    bool formatted = false;
+    if (Context.Session.GetString("format") == "True")
+        formatted = true;
+}
+
+<div class="rss-feed">
+    @if (Model == null)
+    {
+        @Html.CheckMessage(message)
+        <!--Если ничего не выбрано, то ничего не отображать-->
+        <div></div>
+    }
+    else if (Model.Count == 0)
+    {
+        @Html.CheckMessage(message)
+        <div></div>
+    }
+    else
+    {
+        <!--Обертка для лент с полосой прокрутки-->
+        <div id="rss-feeds-wrapper">
+            <!--Создать контейнер для всех лент-->
+            <section id="rss-feeds-viewer">
+                <!--Пройтись по всем лентам-->
+                @foreach (Channel feed in @Model)
+                {
+                    <!--Блок одной ленты-->
+                    <div class="feed-timeline">
+
+                        <!--Если у ленты нет статей,
+                        то вывести ссылку и сообщение-->
+                        @if (feed.Items.Count == 0)
+                        {
+                            <h3>RSS-канал: @feed.ConnectionLink</h3>
+                            <hr />
+                            @Html.CheckError("Не удалось получить статьи данного RSS-канала")
+                        }
+                        else
+                        {
+                            <!--Если статьи есть, то выводить
+                            полноценную информацию-->
+
+                            <!--Название канала-->
+                            <h3>RSS-канал: @feed.Title</h3>
+                            <hr />
+
+                            <!--Статьи канала-->
+                            @foreach (Item article in feed.Items)
+                            {
+                                <div class="card">
+
+                                    <!--Дата публикации-->
+                                    <div class="card-header">
+                                        @article.PubDate
+                                    </div>
+
+                                    <div class="card-body">
+                                        <!--Заголовок статьи-->
+                                        <h5 class="card-title">
+                                            <a href="@article.Link" target="_blank">@article.Title</a>
+                                        </h5>
+
+                                        <!--Раскрываемое описание статьи-->
+                                        <a class="btn btn-primary" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
+                                        <div class="collapse" id="article_@article.ArticleId">
+                                            <!--В зависимости от выбора пользователя
+                                            описание выводится в форматированном
+                                            или неформатированном виде-->
+                                            <div class="article-description">
+                                                @if (formatted)
+                                                {
+                                                    @Html.Raw(@article.Description)
+                                                }
+                                                else
+                                                {
+                                                    @article.Description
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+    }
+</div>

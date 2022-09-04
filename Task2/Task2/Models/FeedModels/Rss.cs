@@ -7,6 +7,9 @@
     {
         public Rss () { }
 
+        /// <summary>
+        /// RSS-канал с лентой
+        /// </summary>
         public Channel Channel { get; set; }
     }
 }

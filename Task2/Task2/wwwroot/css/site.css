@@ -81,3 +81,39 @@ img {
     width: 100%;
     object-fit: cover;
 }
+
+/**/
+#rss-feeds-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#rss-feeds-viewer {
+    min-width: max-content;
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 2rem;
+}
+
+.feed-timeline {
+    width: 400px;
+    gap: 0.275rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    outline: 1px solid gray;
+}
+
+/*
+#rss-feeds-viewer {
+    width: 1000px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.feed-timeline {
+    width: 300px;
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
+}
+*/
