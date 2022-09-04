@@ -36,19 +36,8 @@
             @Html.CheckError(error)
             @Html.CheckSuccess(success)
 
-            <!--Форма выбора ленты-->
-            <!--Необходима для небольших экранов-->
-            @using (Html.BeginForm("SetFeed", "Home", FormMethod.Get))
-            {
-                <label for="feed">RSS-лента:</label>
-                <select id="chosen-feed" name="feed">
-                    <option value="0">----------</option>
-                    @for (int i = 0; i < Model.Feeds.Count; i++)
-                    {
-                        <option value="@(i + 1)">@Model.Feeds[i]</option>
-                    }
-                </select>
-            }
+            <!--Сообщение, появляющееся во время загрузки данных из RSS-источников-->
+            <div id="loading-message" class="alert alert-info"></div>
 
             <!--Лента-->
             <div class="rss-feed"></div>
@@ -102,76 +91,69 @@
 
 @section scripts {
     <script type="text/javascript">
-        // флаг, указывающий, выбрал ли уже пользователь ленту
-        var feedIsChosen = false;
+        // действия, выполняемые сразу после загрузки страницы
+        $(window).on('load', function () {
+            // скрыть сообщение "Загрузка"
+            $('#loading-message').hide();
 
-        // выбор ленты из выпадающего списка
-        $(function () {
-            $('#chosen-feed').change(function () {
-                // получение выбранной ленты
-                var chosenFeed = $('#chosen-feed').val() - 1;
+            // получить ленты после полной загрузки страницы
+            getFeeds("first");
 
-                // указать, что пользователем была выбрана некоторая лента
-                if (chosenFeed != -1)
-                    feedIsChosen = true;
-                else
-                    feedIsChosen = false;
+            // убрать с некоторой задержкой сообщение о применении настроек, если оно есть
+            setTimeout(function () {
+                $('.alert-success').first().slideUp();
+            }, 5000);
+        });
 
-                // выполнить запрос для получения RSS-ленты
-                getFeed(chosenFeed);
-            });
-        })
-
-        // запрос получения RSS-ленты
-        function getFeed(chosenFeed) {
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
-                success: function (data) {
-                    $('.rss-feed').replaceWith(data);
-                }
-            });
-        }
+        // флаг уже выполненной загрузки лент
+        var feedsAreLoaded = false;
 
         // запрос получения выбранных пользователем лент
-        function getFeeds() {
+        // type: first - первичная загрузка, period - обновление
+        function getFeeds(type) {
+            // перед началом загрузки показать пользователю
+            // сообщение "Загрузка..." или "Обновление..."
+            if (type == "first") {
+                $('#loading-message').text("Загрузка...");
+            }
+            else {
+                $('#loading-message').text("Обновление...");
+            }
+
+            $('#loading-message').slideDown();
+
+            // выполнить запрос на получение RSS-лент
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("RssFeeds")',
                 success: function (data) {
+                    // убрать сообщение "Загрузка..."
+                    $('#loading-message').slideUp();
+                    // отобразить на странице полученные ленты
                     $('.rss-feed').replaceWith(data);
+                    // переключить флаг
+                    feedsAreLoaded = true;
+                },
+                error: function () {
+                    $('#loading-message').slideUp();
                 }
             });
         }
-
-        // получить ленты после полной загрузки страницы
-        $(window).on('load', function () {
-            getFeeds();
-        });
 
         // периодическое обновление ленты
         $(function updater() {
             // функция будет срабатывать, только если была успешно загружена модель
             if (@updateTime > 0) {
-                if (feedIsChosen == true) {
-                    // получение выбранной ленты
-                    var chosenFeed = $('#chosen-feed').val() - 1;
-
-                    if (feedIsChosen) {
-                        // выполнить запрос для получения RSS-ленты
-                        // и установить период обновления для повторного запроса
-                        $.ajax({
-                            type: 'GET',
-                            url: '@Url.Action("ChosenFeed")?feed=' + chosenFeed,
-                            success: function (data) {
-                                $('.rss-feed').replaceWith(data);
-                            },
-                            complete: function () {
-                                setTimeout(updater, @updateTime);
-                            }
-                        });
-                    }
+                // кроме того, ленты также должны быть уже успешно загружены
+                if (feedsAreLoaded == true) {
+                    // выполнить запрос для получения RSS-ленты
+                    getFeeds("period");
+                    // после выполнения запроса установить таймер
+                    // на повторное обновление лент
+                    setTimeout(updater, @updateTime);
                 }
+                // если ленты ещё не загружены, попытаться выполнить обновление
+                // через некоторый период снова
                 else {
                     setTimeout(updater, @updateTime);
                 }
@@ -199,7 +181,7 @@
             if (amountLeft > 1) {
                 // получить поле с выбранной лентой
                 var parentDiv = $(this).closest('.feed-field');
-
+                // удалить его
                 parentDiv.remove();
             }
             // в противном случае просто очистить

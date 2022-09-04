@@ -85,41 +85,5 @@ namespace Task2.Controllers
 
             return PartialView(feeds);
         }
-
-        /// <summary>
-        /// Вывод частичного представления со статьями выбранной RSS-ленты
-        /// </summary>
-        /// <param name="feed">Выбранная лента</param>
-        public IActionResult ChosenFeed(int feed)
-        {
-            string feedUrl;
-            if ((feed < Configurator.Settings.Feeds.Count) && (feed >= 0))
-                // ссылка на ленту по её номеру
-                feedUrl = Configurator.Settings.Feeds[feed];
-            else
-            {
-                TempData["MessagePartial"] = "Выберите ленту";
-                // некорректный номер либо не выбрано ничего
-                return PartialView(null);
-            }
-                
-            // получить указанную ленту
-            Rss rss = Connector.GetRSSFeed(feedUrl);
-            if (rss == null)
-            {
-                TempData["ErrorPartial"] = "Не удалось получить RSS-ленту";
-                return PartialView(null);
-            }
-            else if (rss.Channel == null)
-            {
-                TempData["ErrorPartial"] = "Не удалось получить RSS-ленту";
-                return PartialView(null);
-            }
-            else
-            {
-                return PartialView(rss.Channel);
-            }    
-                
-        }
     }
 }

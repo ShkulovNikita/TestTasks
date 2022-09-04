@@ -1,5 +1,6 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿/* ----------------------------------- */
+/* Стили ASP.NET Core MVC по умолчанию */
+/* ----------------------------------- */
 
 a.navbar-brand {
   white-space: normal;
@@ -70,9 +71,9 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
-.article-description {
-
-}
+/* ----------------- */
+/* Собственные стили */
+/* ----------------- */
 
 /* Изображения в статьях при форматированном описании */
 img {
@@ -82,38 +83,31 @@ img {
     object-fit: cover;
 }
 
-/**/
+/* Обертка вокруг всех лент для создания полосы прокрутки */
 #rss-feeds-wrapper {
     overflow-x: auto;
     overflow-y: hidden;
 }
 
+/* Контейнер со всеми лентами */
 #rss-feeds-viewer {
     min-width: max-content;
     display: flex;
     justify-content: flex-end;
     column-gap: 2rem;
+    padding: 1rem;
+    border: 1px solid rgb(238 238 238);
 }
 
+/* Лента одного RSS-канала */
 .feed-timeline {
-    width: 400px;
-    gap: 0.275rem;
+    width: 350px;
+    gap: 0.1rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    outline: 1px solid gray;
+    outline: 1px solid rgb(238 238 238);
 }
 
-/*
-#rss-feeds-viewer {
-    width: 1000px;
-    overflow-x: auto;
-    overflow-y: auto;
+hr {
+    color: rgb(238 238 238);
 }
-
-.feed-timeline {
-    width: 300px;
-    display: inline-block;
-    float: left;
-    margin-right: 5px;
-}
-*/
