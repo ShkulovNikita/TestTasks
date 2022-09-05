@@ -83,7 +83,92 @@ namespace Task2.Controllers
             // получить ленты
             List<Channel> feeds = Connector.GetRssChannels(Configurator.Settings.Feeds);
 
+            // чистка в сессии идентификаторов тех статей, которых больше нет
+            ClearUnusedIds(feeds);
+
             return PartialView(feeds);
+        }
+
+        /// <summary>
+        /// Сохранить в сессии, описания каких статей уже были открыты,
+        /// чтобы после обновления лент они оставались открытыми для пользователя
+        /// </summary>
+        /// <param name="id">Идентификатор статьи</param>
+        /// <param name="isOpened">false: элемент теперь закрыт, true: элемент открыт</param>
+        [HttpPost]
+        public void SaveDescriptionState(string id, bool isOpened)
+        {
+            // список уже открытых описаний
+            List<string> descrIds = GetOpenedDescriptions();
+
+            // есть ли уже данная статья в списке
+            if (descrIds.Contains(id))
+            {
+                // если статья была закрыта, то удалить из списка
+                if (!isOpened)
+                    descrIds.Remove(id);
+            }
+            // статьи в списке нет
+            else
+            {
+                // если статья была открыта, то добавить в список
+                if (isOpened)
+                    descrIds.Add(id);
+            }
+
+            // записать в сессию новый список
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "descr_ids", descrIds);
+        }
+
+        /// <summary>
+        /// Получить из сессии список тех описаний, которые уже были раскрыты
+        /// </summary>
+        /// <returns>Список идентификаторов описаний, которые были раскрыты пользователем</returns>
+        private List<string> GetOpenedDescriptions()
+        {
+            // попытаться получить список из сессии
+            List<string> descrIds = SessionHelper.GetObjectFromJson<List<string>>(HttpContext.Session, "descr_ids");
+
+            if (descrIds != null)
+                return descrIds;
+            else
+                return new List<string>();
+        }
+
+        /// <summary>
+        /// Очистить в сессии идентификаторы тех статей, которые
+        /// больше не отображаются в ленте после очередного обновления
+        /// </summary>
+        /// <param name="feeds">Новые ленты, полученные после обновления</param>
+        private void ClearUnusedIds(List<Channel> feeds)
+        {
+            // список идентификаторов из сессии
+            List<string> ids = GetOpenedDescriptions();
+
+            // список идентификаторов всех статей из всех лент
+            List<string> articlesIds = GetAllArticlesIds(feeds);
+
+            // удалить из списка ids те статьи, которых нет в списке articlesIds
+            int resultNumber = ids.RemoveAll(id => !articlesIds.Contains(id));
+
+            // если произошли изменения - сохранить в сессию новый список
+            if (resultNumber > 0)
+                SessionHelper.SetObjectAsJson(HttpContext.Session, "descr_ids", ids);
+        }
+
+        /// <summary>
+        /// Получить из лент все идентификаторы статей
+        /// </summary>
+        /// <param name="feeds">RSS-ленты со статьями</param>
+        /// <returns>Список всех идентификаторов статей</returns>
+        private List<string> GetAllArticlesIds(List<Channel> feeds)
+        {
+            List<string> result = new List<string>();
+
+            foreach (Channel feed in feeds)
+                result.AddRange(feed.GetItemsIds());
+
+            return result;
         }
     }
 }

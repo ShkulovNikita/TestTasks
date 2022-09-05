@@ -3,6 +3,7 @@
 @using Task2.HtmlHelpers;
 @using Task2.Models.FeedModels;
 @using Microsoft.AspNetCore.Http;
+@using Task2.Helpers;
 
 @{
     // сообщения со стороны сервера (ошибки или информация)
@@ -18,6 +19,12 @@
     bool formatted = false;
     if (Context.Session.GetString("format") == "True")
         formatted = true;
+
+    // список статей, описания которых уже были раскрыты пользователем перед обновлением
+    // (после обновления они должны остаться открытыми)
+    List<string> openedArticles = SessionHelper.GetObjectFromJson<List<string>>(Context.Session, "descr_ids");
+    if (openedArticles == null)
+        openedArticles = new List<string>();
 }
 
 <div class="rss-feed">
@@ -78,22 +85,45 @@
                                         </h5>
 
                                         <!--Раскрываемое описание статьи-->
-                                        <a class="btn btn-primary" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
-                                        <div class="collapse" id="article_@article.ArticleId">
-                                            <!--В зависимости от выбора пользователя
-                                            описание выводится в форматированном
-                                            или неформатированном виде-->
-                                            <div class="article-description">
-                                                @if (formatted)
-                                                {
-                                                    @Html.Raw(@article.Description)
-                                                }
-                                                else
-                                                {
-                                                    @article.Description
-                                                }
+                                        <a class="btn btn-primary button-show-description" id="button_@article.ArticleId" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
+                                        <!--Если пользователь до обновления ленты раскрыл описание, то
+                                        отобразить его в раскрытом виде-->
+                                        @if (openedArticles.Contains(article.ArticleId))
+                                        {
+                                            <div class="collapse show showed" id="article_@article.ArticleId">
+                                                <!--В зависимости от выбора пользователя
+                                                описание выводится в форматированном
+                                                или неформатированном виде-->
+                                                <div class="article-description">
+                                                    @if (formatted)
+                                                    {
+                                                        @Html.Raw(@article.Description)
+                                                    }
+                                                    else
+                                                    {
+                                                        @article.Description
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="collapse" id="article_@article.ArticleId">
+                                                <!--В зависимости от выбора пользователя
+                                                описание выводится в форматированном
+                                                или неформатированном виде-->
+                                                <div class="article-description">
+                                                    @if (formatted)
+                                                    {
+                                                        @Html.Raw(@article.Description)
+                                                    }
+                                                    else
+                                                    {
+                                                        @article.Description
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             }

@@ -124,13 +124,14 @@
 
             // выполнить запрос на получение RSS-лент
             $.ajax({
-                type: 'GET',
                 url: '@Url.Action("RssFeeds")',
                 success: function (data) {
                     // убрать сообщение "Загрузка..."
                     $('#loading-message').slideUp();
+
                     // отобразить на странице полученные ленты
                     $('.rss-feed').replaceWith(data);
+
                     // переключить флаг
                     feedsAreLoaded = true;
                 },
@@ -158,6 +159,46 @@
                     setTimeout(updater, @updateTime);
                 }
             }
+        });
+
+        // запомнить, что пользователь нажал на кнопку
+        // отображения описания некоторой статьи
+        $(document).on('click', '.button-show-description', function () {
+            // получить идентификатор элемента
+            var id = $(this).attr('id');
+            id = id.replace('button_', '');
+
+            // элемент со статьей
+            var articleDescription = $('#article_' + id);
+
+            var nowOpened = false;
+            // если есть класс "showed", то он уже был открыт ранее
+            if (articleDescription.hasClass('showed')) {
+                // в таком случае удалить этот класс
+                articleDescription.removeClass('showed');
+                // указать, что теперь элемент закрыт
+                nowOpened = false;
+            }
+            // элемент теперь будет открыт
+            else {
+                // добавить класс-индикатор "showed"
+                articleDescription.addClass('showed');
+                // указать, что теперь элемент раскрыт
+                nowOpened = true;
+            }
+
+            // сохранить в сессию, что данный элемент был открыт или закрыт
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SaveDescriptionState")/',
+                data: {
+                    id: id,
+                    isOpened: nowOpened
+                },
+                success: function (data) { }
+            });
+
+
         });
 
         // добавление новой ленты

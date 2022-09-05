@@ -32,9 +32,10 @@
         /// <summary>
         /// Сформировать внутренний идентификатор статьи
         /// </summary>
-        public void CreateId ()
+        /// <param name="title">Название канала</param>
+        public void CreateId (string title)
         {
-            ArticleId = string.Concat(Title, PubDate).GetHashCode().ToString();
+            ArticleId = string.Concat(title, Title, PubDate).GetHashCode().ToString();
         }
     }
 }

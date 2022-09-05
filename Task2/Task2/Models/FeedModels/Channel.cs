@@ -31,7 +31,7 @@ namespace Task2.Models.FeedModels
         {
             foreach (Item item in Items)
             {
-                item.CreateId();
+                item.CreateId(Title);
             }
         }
 
@@ -41,8 +41,10 @@ namespace Task2.Models.FeedModels
         /// <returns>Список с идентификаторами статей</returns>
         public List<string> GetItemsIds()
         {
-            List<string> result = Items.Select(i => i.ArticleId).ToList();
-            return result;
+            if (Items.Count > 0)
+                return Items.Select(i => i.ArticleId).ToList();
+            else
+                return new List<string>();
         }
 
         /// <summary>

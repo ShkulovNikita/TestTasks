@@ -3,9 +3,13 @@
   <Feeds>
     <string>https://habr.com/rss/interesting/</string>
     <string>somebullshit</string>
+    <string>https://habr.com/ru/rss/flows/management/</string>
+    <string>https://habr.com/ru/rss/all/</string>
+    <string>https://habr.com/ru/rss/flows/develop/</string>
+    <string>something</string>
   </Feeds>
-  <Update>6000</Update>
-  <Proxy>http://***.***.**.**:****</Proxy>
-  <Login>********</Login>
-  <Password>********</Password>
+  <Update>10000</Update>
+  <Proxy>http://185.195.25.99:3128</Proxy>
+  <Login>proxyuser</Login>
+  <Password>1mY5t32p</Password>
 </Config>
