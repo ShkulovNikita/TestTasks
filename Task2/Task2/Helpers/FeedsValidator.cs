@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Task2.Helpers
 {
@@ -39,6 +38,20 @@ namespace Task2.Helpers
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Проверить, если в списке лент повторения
+        /// </summary>
+        /// <param name="feeds">Адреса RSS-лент</param>
+        /// <returns>true - валидация пройдена успешно, false - неуспешно</returns>
+        static public bool CheckRepeatings(List<string> feeds)
+        {
+            List<string> feedsWithoutRepeats = feeds.Distinct().ToList();
+            if (feeds.Count > feedsWithoutRepeats.Count)
+                return false;
+            else
+                return true;
         }
     }
 }

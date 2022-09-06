@@ -51,34 +51,40 @@ namespace Task2.Controllers
         public IActionResult UpdateSettings(Settings settings, bool format)
         {
             // валидация настроек
+            string validationErrors = "";
 
             // частота обновления должна быть положительной
             if (settings.UpdateTime <= 0)
-                ModelState.AddModelError("UpdateTime", "Частота обновления должна быть положительным числом");
+                validationErrors += "Частота обновления должна быть положительным числом.\r\n";
             // проверка слишком большого значения
-            if (settings.UpdateTime > int.MaxValue / 100)
-                ModelState.AddModelError("UpdateTime", "Задано слишком большое число");
+            if (settings.UpdateTime > int.MaxValue)
+                validationErrors += "Задано слишком большое число.\n";
             // отсутствие списка лент
             if (settings.Feeds == null)
-                ModelState.AddModelError("Feeds", "Не заданы RSS-ленты");
+                validationErrors += "Не заданы RSS-ленты.\n";
             // если список лент существует - проверка его содержимого
             else
             {
                 // пустота списка лент
                 if (settings.Feeds.Count == 0)
-                    ModelState.AddModelError("Feeds", "Не заданы RSS-ленты");
+                    validationErrors += "Не заданы RSS-ленты.\n";
                 // присутствие пустых адресов лент
-                if (FeedsValidator.CheckEmptiness(settings.Feeds))
-                    ModelState.AddModelError("Feeds", "Адрес ленты не может быть пустым");
+                if (!FeedsValidator.CheckEmptiness(settings.Feeds))
+                    validationErrors += "Адрес ленты не может быть пустым.\n";
                 // присутствие некорректных адресов лент
-                if (FeedsValidator.CheckUrls(settings.Feeds))
-                    ModelState.AddModelError("Feeds", "Проверьте корректность адресов лент");
+                if (!FeedsValidator.CheckUrls(settings.Feeds))
+                    validationErrors += "Задан некорректный адрес ленты.\n";
+                // повторения значений
+                if (!FeedsValidator.CheckRepeatings(settings.Feeds))
+                    validationErrors += "Адреса лент не должны повторяться.\n";
             }
-
-            
-            if (!ModelState.IsValid)
+            // были ли обнаружены ошибки при проверках выше
+            if (validationErrors != "")
+            {
+                TempData["ValidationError"] = validationErrors;
                 return RedirectToAction("Index");
-
+            }
+                
             // попытка обновления файла настроек
             string updateResult = Configurator.EditSettings(settings.Feeds.ToList(), settings.UpdateTime);
 
@@ -200,24 +206,6 @@ namespace Task2.Controllers
                 result.AddRange(feed.GetItemsIds());
 
             return result;
-        }
-
-        /// <summary>
-        /// Валидация введенных URL-адресов RSS-лент
-        /// </summary>
-        /// <param name="urls">Список адресов</param>
-        /// <returns>true - валидация пройдена успешно, false - неуспешно</returns>
-        [AcceptVerbs("Get", "Post")]
-        public IActionResult ValidateUrls(List<string> urls)
-        {
-            if (urls == null)
-                return Json(false);
-            if (urls.Count == 0)
-                return Json(false);
-            if (!FeedsValidator.CheckEmptiness(urls))
-                return Json(false);
-
-            return Json(true);
         }
     }
 }

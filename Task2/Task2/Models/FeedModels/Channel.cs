@@ -25,6 +25,11 @@ namespace Task2.Models.FeedModels
         public List<Item> Items { get; set; } = new List<Item>();
 
         /// <summary>
+        /// Внутренний идентификатор канала
+        /// </summary>
+        public string ChannelId { get; set; }
+
+        /// <summary>
         /// Сформировать внутренние идентификаторы статей
         /// </summary>
         public void CreateItemIds ()
@@ -51,5 +56,13 @@ namespace Task2.Models.FeedModels
         /// Ссылка на ленту, используемая при подключении
         /// </summary>
         public string ConnectionLink { get; set; }
+
+        /// <summary>
+        /// Создать внутренний идентификатор канала
+        /// </summary>
+        public void CreateId ()
+        {
+            ChannelId = string.Concat(Title).GetHashCode().ToString();
+        }
     }
 }

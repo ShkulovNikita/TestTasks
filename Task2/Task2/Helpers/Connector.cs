@@ -144,11 +144,14 @@ namespace Task2.Helpers
             // получить объект с лентой
             Rss feed = Parser.ParseRss(feedXml);
 
-            // если есть статьи, то сформировать для них идентификаторы
+            // если есть лента со статьими, то сформировать для них идентификаторы
             if (feed != null)
                 if (feed.Channel != null)
+                {
+                    feed.Channel.CreateId();
                     feed.Channel.CreateItemIds();
-
+                }
+                    
             return feed;
         }
 

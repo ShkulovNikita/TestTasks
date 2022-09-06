@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Task2.Models
 {
@@ -25,15 +24,13 @@ namespace Task2.Models
         /// <summary>
         /// Список лент
         /// </summary>
-        [Required (ErrorMessage = "Не указаны адреса лент")]
-        [Remote(action: "ValidateUrls", controller: "Home", ErrorMessage = "Введен некорректный адрес RSS-ленты")]
         public List<string> Feeds { get; set; } = new List<string>();
 
         /// <summary>
         /// Частота обновления
         /// </summary>
         [Required (ErrorMessage = "Не указана частота обновления")]
-        [Range(1, int.MaxValue/1000, ErrorMessage = "Период должен быть больше нуля")]
+        [Range(1, int.MaxValue, ErrorMessage = "Период должен быть больше нуля")]
         public int UpdateTime { get; set; }
     }
 }

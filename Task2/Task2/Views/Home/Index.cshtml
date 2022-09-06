@@ -16,6 +16,11 @@
     if (TempData["Error"] != null)
         error = TempData["Error"].ToString();
 
+    // ошибки валидации
+    string validationErrors = null;
+    if (TempData["ValidationError"] != null)
+        validationErrors = TempData["ValidationError"].ToString();
+
     // получить частоту обновления из модели, если есть
     int updateTime = -1;
     if (Model != null)
@@ -47,6 +52,7 @@
             @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
             {
                 <!--Поля для ввода ссылок на RSS-ленты-->
+                @Html.CheckError(validationErrors);
                 <label>Ленты</label>
                 <div id="settings-feeds">
                     @foreach (string feed in Model.Feeds)
@@ -56,14 +62,13 @@
                             <button type="button" class="btn btn-danger remove-feed">-</button>
                         </div>
                     }
-                    <span id="feeds-error-message" asp-validation-for="Feeds"></span>
                     <button type="button" class="btn btn-success add-feed">Добавить ленту</button>
                 </div>
 
                 <!--Периодичность обновления лент-->
                 <div id="settings-frequency">
                     <label asp-for="UpdateTime">Частота обновления (секунды)</label><br />
-                    <input type="number" asp-for="UpdateTime" min="1" oninput="validity.valid || (value = '');" value="@Model.UpdateTime" />
+                    <input id="update-time-field" type="number" asp-for="UpdateTime" min="1" max="2147483647" onmouseout="validateUpdateTime()" value="@Model.UpdateTime" />
                     <span asp-validation-for="UpdateTime"></span>
                 </div>
 
@@ -127,6 +132,22 @@
                 $('#loading-message').text("Обновление...");
             }
             $('#loading-message').slideDown();
+
+            // сохранить текущую позицию горизонтальной прокрутки
+            var mainScrollPosition = $('#rss-feeds-wrapper').scrollLeft();
+
+            /* сохранить текущие позиции вертикальных прокруток */
+
+            // элементы с лентами
+            var feedsTimelines = $('.feed-wrapper');
+            // массив с позициями прокруток
+            var feedsScrollPositions = [];
+
+            // перебрать все ленты и сохранить
+            $('.feed-wrapper').each(function (index, item) {
+                feedsScrollPositions[index] = item.scrollTop;
+            });
+
             // выполнить запрос на получение RSS-лент
             $.ajax({
                 url: '@Url.Action("RssFeeds")',
@@ -140,6 +161,14 @@
                 },
                 error: function () {
                     $('#loading-message').slideUp();
+                },
+                complete: function () {
+                    // переместить горизонтальную полосу прокрутки на позицию до обновления
+                    $('#rss-feeds-wrapper').scrollLeft(mainScrollPosition);
+                    // переместить вертикальные полосы
+                    $('.feed-wrapper').each(function (index, item) {
+                        item.scrollTop = feedsScrollPositions[index];
+                    });
                 }
             });
         }
@@ -206,9 +235,7 @@
             // получить уже существующее поле для копирования
             var feedFieldTemplate = $('.feed-field:last');
             // добавить копию
-            $(feedFieldTemplate).clone().appendTo('#settings-feeds').find("input[type='text']").val("");
-            // переместить сообщения валидации в конец
-            $('#feeds-error-message').appendTo('#settings-feeds');
+            $(feedFieldTemplate).clone().appendTo('#settings-feeds').find("input[type='url']").val("");
             // переместить кнопку добавления в конец
             $(this).appendTo('#settings-feeds');
         });
@@ -226,8 +253,20 @@
             }
             // в противном случае просто очистить
             else {
-                $(this).closest('.feed-field').find("input[type='text']").val("");
+                $(this).closest('.feed-field').find("input[type='url']").val("");
             }
         });
+
+        // автоматическая замена значений частоты обновления,
+        // не соответствующих промежутку [1, maxint]
+        function validateUpdateTime() {
+            var input = $('#update-time-field').val();
+            if (input <= 0) {
+                $('#update-time-field').val(1);
+            }
+            else if (input > 2147483647) {
+                $('#update-time-field').val(2147483647);
+            }
+        }
     </script>
 }

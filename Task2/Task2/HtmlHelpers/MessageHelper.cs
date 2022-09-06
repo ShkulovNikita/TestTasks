@@ -26,8 +26,24 @@ namespace Task2.HtmlHelpers
                 TagBuilder div = new TagBuilder("div");
                 div.AddCssClass("alert");
                 div.AddCssClass($"alert-{type}");
-                div.InnerHtml.Append(message);
 
+                // проверить, состоит ли сообщение из нескольких
+                if (!message.Contains("\n"))
+                    div.InnerHtml.Append(message);
+                else
+                {
+                    string[] messages = message.Split("\n");
+                    TagBuilder ul = new TagBuilder("ul");
+                    foreach (string msg in messages)
+                        if (msg != "")
+                        {
+                            TagBuilder li = new TagBuilder("li");
+                            li.InnerHtml.Append(msg);
+                            ul.InnerHtml.AppendHtml(li);
+                        }
+                    div.InnerHtml.AppendHtml(ul);
+                }
+                
                 // вернуть полученный HTML-элемент
                 return div;
             }

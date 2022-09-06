@@ -48,86 +48,89 @@
                 <!--Пройтись по всем лентам-->
                 @foreach (Channel feed in @Model)
                 {
-                    <!--Блок одной ленты-->
-                    <div class="feed-timeline">
+                    <!--Обертка одной ленты для создания вертикальной полосы прокрутки-->
+                    <div class="feed-wrapper">
+                        <!--Блок одной ленты-->
+                        <div id="@feed.ChannelId" class="feed-timeline">
 
-                        <!--Если у ленты нет статей,
-                        то вывести ссылку и сообщение-->
-                        @if (feed.Items.Count == 0)
-                        {
-                            <h3>Канал: @feed.ConnectionLink</h3>
-                            <hr />
-                            @Html.CheckError("Не удалось получить статьи данного RSS-канала")
-                        }
-                        else
-                        {
-                            <!--Если статьи есть, то выводить
-                            полноценную информацию-->
-
-                            <!--Название канала-->
-                            <h3>Канал: @feed.Title</h3>
-                            <hr />
-
-                            <!--Статьи канала-->
-                            @foreach (Item article in feed.Items)
+                            <!--Если у ленты нет статей,
+                            то вывести ссылку и сообщение-->
+                            @if (feed.Items.Count == 0)
                             {
-                                <div class="card">
-
-                                    <!--Дата публикации-->
-                                    <div class="card-header">
-                                        @article.PubDate
-                                    </div>
-
-                                    <div class="card-body">
-                                        <!--Заголовок статьи-->
-                                        <h5 class="card-title">
-                                            <a href="@article.Link" target="_blank">@article.Title</a>
-                                        </h5>
-
-                                        <!--Раскрываемое описание статьи-->
-                                        <a class="btn btn-primary button-show-description" id="button_@article.ArticleId" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
-                                        <!--Если пользователь до обновления ленты раскрыл описание, то
-                                        отобразить его в раскрытом виде-->
-                                        @if (openedArticles.Contains(article.ArticleId))
-                                        {
-                                            <div class="collapse show showed" id="article_@article.ArticleId">
-                                                <!--В зависимости от выбора пользователя
-                                                описание выводится в форматированном
-                                                или неформатированном виде-->
-                                                <div class="article-description">
-                                                    @if (formatted)
-                                                    {
-                                                        @Html.Raw(@article.Description)
-                                                    }
-                                                    else
-                                                    {
-                                                        @article.Description
-                                                    }
-                                                </div>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="collapse" id="article_@article.ArticleId">
-                                                <!--В зависимости от выбора пользователя
-                                                описание выводится в форматированном
-                                                или неформатированном виде-->
-                                                <div class="article-description">
-                                                    @if (formatted)
-                                                    {
-                                                        @Html.Raw(@article.Description)
-                                                    }
-                                                    else
-                                                    {
-                                                        @article.Description
-                                                    }
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
+                                <h3>Канал: @feed.ConnectionLink</h3>
+                                <hr />
+                                @Html.CheckError("Не удалось получить статьи данного RSS-канала")
                             }
-                        }
+                            else
+                            {
+                                <!--Если статьи есть, то выводить
+                                полноценную информацию-->
+
+                                <!--Название канала-->
+                                <h3>Канал: @feed.Title</h3>
+                                <hr />
+
+                                <!--Статьи канала-->
+                                @foreach (Item article in feed.Items)
+                                {
+                                    <div class="card">
+
+                                        <!--Дата публикации-->
+                                        <div class="card-header">
+                                            @article.PubDate
+                                        </div>
+
+                                        <div class="card-body">
+                                            <!--Заголовок статьи-->
+                                            <h5 class="card-title">
+                                                <a href="@article.Link" target="_blank">@article.Title</a>
+                                            </h5>
+
+                                            <!--Раскрываемое описание статьи-->
+                                            <a class="btn btn-primary button-show-description" id="button_@article.ArticleId" data-toggle="collapse" href="#article_@article.ArticleId" role="button" aria-expanded="false" aria-controle="collapseExample">Описание</a>
+                                            <!--Если пользователь до обновления ленты раскрыл описание, то
+                                            отобразить его в раскрытом виде-->
+                                            @if (openedArticles.Contains(article.ArticleId))
+                                            {
+                                                <div class="collapse show showed" id="article_@article.ArticleId">
+                                                    <!--В зависимости от выбора пользователя
+                                                    описание выводится в форматированном
+                                                    или неформатированном виде-->
+                                                    <div class="article-description">
+                                                        @if (formatted)
+                                                        {
+                                                            @Html.Raw(@article.Description)
+                                                        }
+                                                        else
+                                                        {
+                                                            @article.Description
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="collapse" id="article_@article.ArticleId">
+                                                    <!--В зависимости от выбора пользователя
+                                                    описание выводится в форматированном
+                                                    или неформатированном виде-->
+                                                    <div class="article-description">
+                                                        @if (formatted)
+                                                        {
+                                                            @Html.Raw(@article.Description)
+                                                        }
+                                                        else
+                                                        {
+                                                            @article.Description
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
                     </div>
                 }
             </section>

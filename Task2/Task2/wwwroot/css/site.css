@@ -106,8 +106,16 @@ img {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     outline: 1px solid rgb(238 238 238);
+    height: 75vh;
 }
 
+/* Стилизация разделителя */
 hr {
     color: rgb(238 238 238);
+}
+
+/* Обертка с вертикальной полосой прокрутки для одной ленты*/
+.feed-wrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
 }

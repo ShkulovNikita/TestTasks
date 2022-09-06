@@ -75,7 +75,7 @@ namespace Task2.Helpers
                 // создание клона настроек с примененными изменениями
                 Config newSettings = new Config(Settings);
                 if (updateFrequency)
-                    newSettings.Update = updateTime * 1000;
+                    newSettings.Update = updateTime;
                 if (updateFeeds)
                     newSettings.Feeds = feeds;
 
