@@ -93,7 +93,7 @@ img {
 #rss-feeds-viewer {
     min-width: max-content;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: row;
     column-gap: 2rem;
     padding: 1rem;
     border: 1px solid rgb(238 238 238);
@@ -105,17 +105,62 @@ img {
     gap: 0.1rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    outline: 1px solid rgb(238 238 238);
-    height: 75vh;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Стилизация разделителя */
 hr {
-    color: rgb(238 238 238);
+    color: rgb(238, 238, 238);
+    margin-left: 0;
+    margin-right: 0;
 }
 
 /* Обертка с вертикальной полосой прокрутки для одной ленты*/
 .feed-wrapper {
     overflow-x: hidden;
     overflow-y: auto;
+    outline: 1px solid rgb(238, 238, 238);
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+/* Меню настроек приложения */
+#settings-menu {
+    border-left: 1px solid rgb(238, 238, 238);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Блок настроек, включающий в себя адрес ленты и кнопку её удаления */
+.feed-field {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 1rem;
+}
+
+/* Поле ввода адреса ленты */
+.feed-link {
+    flex-grow: 1;
+} 
+
+/* Форма настроек */
+#settings-menu form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+/* Карточки со статьями */
+.card {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Описание статьи */
+.article-description {
+    margin-top: 0.5rem;
 }

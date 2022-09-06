@@ -38,8 +38,10 @@
         <!--Блок ленты-->
         <div class="col-9">
             <!--Блок сообщений-->
-            @Html.CheckError(error)
-            @Html.CheckSuccess(success)
+            <div class="info-messages">
+                @Html.CheckError(error)
+                @Html.CheckSuccess(success)
+            </div>
 
             <!--Сообщение, появляющееся во время загрузки данных из RSS-источников-->
             <div id="loading-message" class="alert alert-info"></div>
@@ -48,7 +50,9 @@
             <div class="rss-feed"></div>
         </div>
         <!--Блок настроек-->
-        <div class="col-3">
+        <div id="settings-menu" class="col-3">
+            <h5>Настройки фидера</h5>
+            <hr />
             @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
             {
                 <!--Поля для ввода ссылок на RSS-ленты-->
@@ -73,17 +77,19 @@
                 </div>
 
                 <!--Форматирование описаний статей по тегам-->
-                <label>Вывод описания</label>
-                @if (formatted)
-                {
-                    <input type="radio" name="format" value="false" /><span>Без форматирования</span><br />
-                    <input type="radio" name="format" value="true" checked /><span>С форматированием</span><br />
-                }
-                else
-                {
-                    <input type="radio" name="format" value="false" checked /><span>Без форматирования</span><br />
-                    <input type="radio" name="format" value="true" /><span>С форматированием</span><br />
-                }
+        <div id="settings-format">
+            <label>Вывод описания</label>
+            @if (formatted)
+            {
+                <p><input type="radio" name="format" value="false" /><span>Без форматирования</span><br /></p>
+                <p><input type="radio" name="format" value="true" checked /><span>С форматированием</span><br /></p>
+            }
+            else
+            {
+        <p><input type="radio" name="format" value="false" checked /><span>Без форматирования</span><br /></p>
+        <p><input type="radio" name="format" value="true" /><span>С форматированием</span><br /></p>
+            }
+        </div>
 
                 <input type="submit" class="btn btn-primary" value="Сохранить" />
             }
@@ -102,7 +108,7 @@
     <!--Скрипты для валидации-->
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-    
+
     <!--Скрипты данного представления-->
     <script type="text/javascript">
         // действия, выполняемые сразу после загрузки страницы
@@ -133,20 +139,10 @@
             }
             $('#loading-message').slideDown();
 
-            // сохранить текущую позицию горизонтальной прокрутки
-            var mainScrollPosition = $('#rss-feeds-wrapper').scrollLeft();
-
-            /* сохранить текущие позиции вертикальных прокруток */
-
-            // элементы с лентами
-            var feedsTimelines = $('.feed-wrapper');
-            // массив с позициями прокруток
+            // переменная для хранения позиции горизонтальной прокрутки
+            var mainScrollPosition;
+            // массив с позициями вертикальных прокруток
             var feedsScrollPositions = [];
-
-            // перебрать все ленты и сохранить
-            $('.feed-wrapper').each(function (index, item) {
-                feedsScrollPositions[index] = item.scrollTop;
-            });
 
             // выполнить запрос на получение RSS-лент
             $.ajax({
@@ -154,6 +150,16 @@
                 success: function (data) {
                     // убрать сообщение "Загрузка..."
                     $('#loading-message').slideUp();
+
+                    // сохранить текущую позицию горизонтальной прокрутки
+                    mainScrollPosition = $('#rss-feeds-wrapper').scrollLeft();
+
+                    /* сохранить текущие позиции вертикальных прокруток */
+                    // перебрать все ленты и сохранить
+                    $('.feed-wrapper').each(function (index, item) {
+                        feedsScrollPositions[index] = item.scrollTop;
+                    });
+
                     // отобразить на странице полученные ленты
                     $('.rss-feed').replaceWith(data);
                     // переключить флаг
