@@ -36,7 +36,7 @@
     @if (Model != null)
     {
         <!--Блок ленты-->
-        <div class="col-9">
+        <div class="col-lg-9 col-xl-9 col-md-9 col-sm-12 col-xs-12">
             <!--Блок сообщений-->
             <div class="info-messages">
                 @Html.CheckError(error)
@@ -50,7 +50,7 @@
             <div class="rss-feed"></div>
         </div>
         <!--Блок настроек-->
-        <div id="settings-menu" class="col-3">
+        <div id="settings-menu" class="col-lg-3 col-xl-3 col-md-3 col-sm-12 col-xs-12">
             <h5>Настройки фидера</h5>
             <hr />
             @using (Html.BeginForm("UpdateSettings", "Home", FormMethod.Post))
