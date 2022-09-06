@@ -1,8 +1,8 @@
-﻿@using Task2.ViewModels;
+﻿@using Task2.Models;
 @using Task2.HtmlHelpers;
 @using Microsoft.AspNetCore.Http;
 
-@model FeedViewModel;
+@model Settings;
 
 @{
     ViewData["Title"] = "RSS-фидер";
@@ -22,9 +22,9 @@
         updateTime = Model.UpdateTime;
 
     // получить выбранный формат вывода описания
-    bool formatted = false;
-    if (Context.Session.GetString("format") == "True")
-        formatted = true;
+    bool formatted = true;
+    if (Context.Session.GetString("format") == "False")
+        formatted = false;
 }
 
 <div class="row">
@@ -49,19 +49,23 @@
                 <!--Поля для ввода ссылок на RSS-ленты-->
                 <label>Ленты</label>
                 <div id="settings-feeds">
-
                     @foreach (string feed in Model.Feeds)
                     {
                         <div class="feed-field">
-                            <input type="text" name="feedLink" value="@feed" class="feed-link" />
+                            <input type="url" asp-for="Feeds" value="@feed" class="feed-link" />
                             <button type="button" class="btn btn-danger remove-feed">-</button>
                         </div>
                     }
+                    <span id="feeds-error-message" asp-validation-for="Feeds"></span>
                     <button type="button" class="btn btn-success add-feed">Добавить ленту</button>
                 </div>
 
                 <!--Периодичность обновления лент-->
-                <input type="number" name="updateTime" value="@Model.UpdateTime" />
+                <div id="settings-frequency">
+                    <label asp-for="UpdateTime">Частота обновления (секунды)</label><br />
+                    <input type="number" asp-for="UpdateTime" min="1" oninput="validity.valid || (value = '');" value="@Model.UpdateTime" />
+                    <span asp-validation-for="UpdateTime"></span>
+                </div>
 
                 <!--Форматирование описаний статей по тегам-->
                 <label>Вывод описания</label>
@@ -90,15 +94,18 @@
 </div>
 
 @section scripts {
+    <!--Скрипты для валидации-->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    
+    <!--Скрипты данного представления-->
     <script type="text/javascript">
         // действия, выполняемые сразу после загрузки страницы
         $(window).on('load', function () {
             // скрыть сообщение "Загрузка"
             $('#loading-message').hide();
-
             // получить ленты после полной загрузки страницы
             getFeeds("first");
-
             // убрать с некоторой задержкой сообщение о применении настроек, если оно есть
             setTimeout(function () {
                 $('.alert-success').first().slideUp();
@@ -119,19 +126,15 @@
             else {
                 $('#loading-message').text("Обновление...");
             }
-
             $('#loading-message').slideDown();
-
             // выполнить запрос на получение RSS-лент
             $.ajax({
                 url: '@Url.Action("RssFeeds")',
                 success: function (data) {
                     // убрать сообщение "Загрузка..."
                     $('#loading-message').slideUp();
-
                     // отобразить на странице полученные ленты
                     $('.rss-feed').replaceWith(data);
-
                     // переключить флаг
                     feedsAreLoaded = true;
                 },
@@ -151,12 +154,12 @@
                     getFeeds("period");
                     // после выполнения запроса установить таймер
                     // на повторное обновление лент
-                    setTimeout(updater, @updateTime);
+                    setTimeout(updater, @updateTime * 1000);
                 }
                 // если ленты ещё не загружены, попытаться выполнить обновление
                 // через некоторый период снова
                 else {
-                    setTimeout(updater, @updateTime);
+                    setTimeout(updater, @updateTime * 1000);
                 }
             }
         });
@@ -170,8 +173,8 @@
 
             // элемент со статьей
             var articleDescription = $('#article_' + id);
-
             var nowOpened = false;
+
             // если есть класс "showed", то он уже был открыт ранее
             if (articleDescription.hasClass('showed')) {
                 // в таком случае удалить этот класс
@@ -186,7 +189,6 @@
                 // указать, что теперь элемент раскрыт
                 nowOpened = true;
             }
-
             // сохранить в сессию, что данный элемент был открыт или закрыт
             $.ajax({
                 type: 'POST',
@@ -197,18 +199,16 @@
                 },
                 success: function (data) { }
             });
-
-
         });
 
         // добавление новой ленты
         $('#settings-feeds').on('click', '.add-feed', function () {
             // получить уже существующее поле для копирования
             var feedFieldTemplate = $('.feed-field:last');
-
             // добавить копию
             $(feedFieldTemplate).clone().appendTo('#settings-feeds').find("input[type='text']").val("");
-
+            // переместить сообщения валидации в конец
+            $('#feeds-error-message').appendTo('#settings-feeds');
             // переместить кнопку добавления в конец
             $(this).appendTo('#settings-feeds');
         });
@@ -217,7 +217,6 @@
         $('#settings-feeds').on('click', '.remove-feed', function () {
             // проверить, сколько осталось полей для ввода ссылок ленты
             var amountLeft = $('.feed-field').length;
-
             // удалять, только если останется ещё хотя бы одно поле
             if (amountLeft > 1) {
                 // получить поле с выбранной лентой

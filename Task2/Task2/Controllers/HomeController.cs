@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Task2.ViewModels;
 using Task2.Helpers;
 using Task2.Models.FeedModels;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Task2.Models;
 
 namespace Task2.Controllers
 {
@@ -15,6 +15,7 @@ namespace Task2.Controllers
         /// <summary>
         /// Отображение главной страницы приложения
         /// </summary>
+        [HttpGet]
         public IActionResult Index()
         {
             //попытка получить настройки из файла
@@ -35,7 +36,7 @@ namespace Task2.Controllers
             }
 
             // создание ViewModel
-            FeedViewModel feedVm = new FeedViewModel(Configurator.Settings);
+            Settings feedVm = new Settings(Configurator.Settings);
 
             return View(feedVm);
         }
@@ -43,13 +44,43 @@ namespace Task2.Controllers
         /// <summary>
         /// Обновление настроек
         /// </summary>
-        /// <param name="feedLink">Список выбранных лент</param>
-        /// <param name="updateTime">Частота обновления</param>
+        /// <param name="settings">Настройки, выбранные пользователем</param>
+        /// <param name="format">false - выводить описание без форматирования тегов, 
+        /// true - с форматированием</param>
         [HttpPost]
-        public IActionResult UpdateSettings(string[] feedLink, int updateTime, bool format)
+        public IActionResult UpdateSettings(Settings settings, bool format)
         {
+            // валидация настроек
+
+            // частота обновления должна быть положительной
+            if (settings.UpdateTime <= 0)
+                ModelState.AddModelError("UpdateTime", "Частота обновления должна быть положительным числом");
+            // проверка слишком большого значения
+            if (settings.UpdateTime > int.MaxValue / 100)
+                ModelState.AddModelError("UpdateTime", "Задано слишком большое число");
+            // отсутствие списка лент
+            if (settings.Feeds == null)
+                ModelState.AddModelError("Feeds", "Не заданы RSS-ленты");
+            // если список лент существует - проверка его содержимого
+            else
+            {
+                // пустота списка лент
+                if (settings.Feeds.Count == 0)
+                    ModelState.AddModelError("Feeds", "Не заданы RSS-ленты");
+                // присутствие пустых адресов лент
+                if (FeedsValidator.CheckEmptiness(settings.Feeds))
+                    ModelState.AddModelError("Feeds", "Адрес ленты не может быть пустым");
+                // присутствие некорректных адресов лент
+                if (FeedsValidator.CheckUrls(settings.Feeds))
+                    ModelState.AddModelError("Feeds", "Проверьте корректность адресов лент");
+            }
+
+            
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index");
+
             // попытка обновления файла настроек
-            string updateResult = Configurator.EditSettings(feedLink.ToList(), updateTime);
+            string updateResult = Configurator.EditSettings(settings.Feeds.ToList(), settings.UpdateTime);
 
             if (updateResult == "ok")
                 TempData["Success"] = "Настройки успешно обновлены";
@@ -121,7 +152,7 @@ namespace Task2.Controllers
         }
 
         /// <summary>
-        /// Получить из сессии список тех описаний, которые уже были раскрыты
+        /// Получить из сессии список тех описаний, которые уже были раскрыты пользователем
         /// </summary>
         /// <returns>Список идентификаторов описаний, которые были раскрыты пользователем</returns>
         private List<string> GetOpenedDescriptions()
@@ -169,6 +200,24 @@ namespace Task2.Controllers
                 result.AddRange(feed.GetItemsIds());
 
             return result;
+        }
+
+        /// <summary>
+        /// Валидация введенных URL-адресов RSS-лент
+        /// </summary>
+        /// <param name="urls">Список адресов</param>
+        /// <returns>true - валидация пройдена успешно, false - неуспешно</returns>
+        [AcceptVerbs("Get", "Post")]
+        public IActionResult ValidateUrls(List<string> urls)
+        {
+            if (urls == null)
+                return Json(false);
+            if (urls.Count == 0)
+                return Json(false);
+            if (!FeedsValidator.CheckEmptiness(urls))
+                return Json(false);
+
+            return Json(true);
         }
     }
 }

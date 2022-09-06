@@ -54,6 +54,11 @@ namespace Task2.Helpers
             bool updateFeeds = false;
             bool updateFrequency = false;
 
+            // удалить дубликаты из новой ленты
+            feeds = DeleteDuplicates(feeds);
+            // убрать пустые значения
+            feeds = DeleteEmpties(feeds);
+
             // сравнение списков лент
             bool feedsTheSame = CompareFeeds(feeds, settings.Feeds);
             // если не совпадают - обновить список лент
@@ -70,7 +75,7 @@ namespace Task2.Helpers
                 // создание клона настроек с примененными изменениями
                 Config newSettings = new Config(Settings);
                 if (updateFrequency)
-                    newSettings.Update = updateTime;
+                    newSettings.Update = updateTime * 1000;
                 if (updateFeeds)
                     newSettings.Feeds = feeds;
 
@@ -114,6 +119,28 @@ namespace Task2.Helpers
             IEnumerable<string> inSecondOnly = feeds2.Except(feeds1);
             bool allInBoth = !inFirstOnly.Any() && !inSecondOnly.Any();
             return allInBoth;
+        }
+
+        /// <summary>
+        /// Удалить дубликаты адресов лент
+        /// </summary>
+        /// <param name="feeds">Список лент</param>
+        /// <returns>Список лент без дубликатов</returns>
+        static private List<string> DeleteDuplicates(List<string> feeds)
+        {
+            List<string> result = feeds.GroupBy(x => x).Select(y => y.First()).ToList();
+            return result;
+        }
+
+        /// <summary>
+        /// Удалить пустые адреса лент
+        /// </summary>
+        /// <param name="feeds">Список лент</param>
+        /// <returns>Список лент без пустых адресов</returns>
+        static private List<string> DeleteEmpties(List<string> feeds)
+        {
+            List<string> result = feeds.Where(x => x != "").ToList();
+            return result;
         }
     }
 }
