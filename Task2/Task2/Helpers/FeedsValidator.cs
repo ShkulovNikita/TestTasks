@@ -53,5 +53,17 @@ namespace Task2.Helpers
             else
                 return true;
         }
+
+        /// <summary>
+        /// Проверка одной ссылки
+        /// </summary>
+        /// <param name="link">Ссылка на ленту</param>
+        /// <returns>true - валидация пройдена успешно, false - неуспешно</returns>
+        static public bool CheckLink(string link)
+        {
+            if ((link == null) || (link == "") || (!Uri.TryCreate(link, UriKind.Absolute, out _)))
+                return false;
+            return true;
+        }
     }
 }

@@ -7,6 +7,11 @@
 @{
     ViewData["Title"] = "RSS-фидер";
 
+    // проверка модели на null
+    bool modelIsOk = false;
+    if (Model != null)
+        modelIsOk = true;
+
     // сообщения со стороны сервера
     string success = null;
     if (TempData["Success"] != null)
@@ -33,7 +38,7 @@
 }
 
 <div class="row">
-    @if (Model != null)
+    @if (modelIsOk)
     {
         <!--Блок ленты-->
         <div class="col-lg-9 col-xl-9 col-md-9 col-sm-12 col-xs-12">
@@ -91,7 +96,7 @@
             }
         </div>
 
-                <input type="submit" class="btn btn-primary" value="Сохранить" />
+                <input type="submit" id="settings-button" class="btn btn-primary" value="Сохранить" />
             }
         </div>
     }
@@ -115,8 +120,15 @@
         $(window).on('load', function () {
             // скрыть сообщение "Загрузка"
             $('#loading-message').hide();
-            // получить ленты после полной загрузки страницы
-            getFeeds("first");
+
+            validateUrlFields();
+
+            // выполнять загрузку лент, только если есть модель
+            if (@modelIsOk.ToString().ToLower() == true) {
+                // получить ленты
+                getFeeds("first");
+            }
+
             // убрать с некоторой задержкой сообщение о применении настроек, если оно есть
             setTimeout(function () {
                 $('.alert-success').first().slideUp();
