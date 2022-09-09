@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Xml.Serialization;
 using Task2.Models;
 using Task2.Models.FeedModels;
-using System.Diagnostics;
 
 namespace Task2.Helpers
 {
@@ -22,6 +22,7 @@ namespace Task2.Helpers
             Config settings;
 
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(Config));
+            // получить настройки из XML-файла в виде объекта
             try
             {
                 using (FileStream fs = new FileStream(configName, FileMode.OpenOrCreate))
@@ -116,7 +117,7 @@ namespace Task2.Helpers
         }
 
         /// <summary>
-        /// Преобразовать исходный формат даты с переводом на русский
+        /// Преобразовать исходный формат даты с переводом на русский язык
         /// </summary>
         /// <param name="date">Исходная дата</param>
         /// <returns>Преобразованная дата</returns>

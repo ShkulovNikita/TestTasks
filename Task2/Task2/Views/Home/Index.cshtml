@@ -82,19 +82,19 @@
                 </div>
 
                 <!--Форматирование описаний статей по тегам-->
-        <div id="settings-format">
-            <label>Вывод описания</label>
-            @if (formatted)
-            {
-                <p><input type="radio" name="format" value="false" /><span>Без форматирования</span><br /></p>
-                <p><input type="radio" name="format" value="true" checked /><span>С форматированием</span><br /></p>
-            }
-            else
-            {
-        <p><input type="radio" name="format" value="false" checked /><span>Без форматирования</span><br /></p>
-        <p><input type="radio" name="format" value="true" /><span>С форматированием</span><br /></p>
-            }
-        </div>
+                <div id="settings-format">
+                    <label>Вывод описания</label>
+                    @if (formatted)
+                    {
+                        <p><input type="radio" name="format" value="false" /><span>Без форматирования</span><br /></p>
+                        <p><input type="radio" name="format" value="true" checked /><span>С форматированием</span><br /></p>
+                    }
+                    else
+                    {
+                        <p><input type="radio" name="format" value="false" checked /><span>Без форматирования</span><br /></p>
+                        <p><input type="radio" name="format" value="true" /><span>С форматированием</span><br /></p>
+                    }
+                </div>
 
                 <input type="submit" id="settings-button" class="btn btn-primary" value="Сохранить" />
             }
@@ -121,18 +121,14 @@
             // скрыть сообщение "Загрузка"
             $('#loading-message').hide();
 
-            validateUrlFields();
-
             // выполнять загрузку лент, только если есть модель
             if (@modelIsOk.ToString().ToLower() == true) {
                 // получить ленты
                 getFeeds("first");
             }
 
-            // убрать с некоторой задержкой сообщение о применении настроек, если оно есть
-            setTimeout(function () {
-                $('.alert-success').first().slideUp();
-            }, 5000);
+            // скрыть сообщение о применении настроек, если оно есть
+            hideSettingsMessage();
         });
 
         // флаг уже выполненной загрузки лент
@@ -141,15 +137,8 @@
         // запрос получения выбранных пользователем лент
         // type: first - первичная загрузка, period - обновление
         function getFeeds(type) {
-            // перед началом загрузки показать пользователю
-            // сообщение "Загрузка..." или "Обновление..."
-            if (type == "first") {
-                $('#loading-message').text("Загрузка...");
-            }
-            else {
-                $('#loading-message').text("Обновление...");
-            }
-            $('#loading-message').slideDown();
+            // перед началом загрузки показать пользователю сообщение
+            showLoadingMessage(type);
 
             // переменная для хранения позиции горизонтальной прокрутки
             var mainScrollPosition;
@@ -161,7 +150,7 @@
                 url: '@Url.Action("RssFeeds")',
                 success: function (data) {
                     // убрать сообщение "Загрузка..."
-                    $('#loading-message').slideUp();
+                    hideLoadingMessage();
 
                     // сохранить текущую позицию горизонтальной прокрутки
                     mainScrollPosition = $('#rss-feeds-wrapper').scrollLeft();
@@ -178,7 +167,7 @@
                     feedsAreLoaded = true;
                 },
                 error: function () {
-                    $('#loading-message').slideUp();
+                    hideLoadingMessage();
                 },
                 complete: function () {
                     // переместить горизонтальную полосу прокрутки на позицию до обновления
@@ -191,9 +180,37 @@
             });
         }
 
+        // показать сообщение о выполнении загрузки
+        function showLoadingMessage(type) {
+            // на основе типа загрузки (первичная или повторная) вывести
+            // соответствующий текст
+            if (type == "first") {
+                $('#loading-message').text("Загрузка...");
+            }
+            else {
+                $('#loading-message').text("Обновление...");
+            }
+            // показать сообщение
+            $('#loading-message').slideDown();
+        }
+
+        // скрыть сообщение о выполнении загрузки
+        function hideLoadingMessage() {
+            $('#loading-message').slideUp();
+        }
+
+        // скрыть сообщение об успешном применении настроек
+        function hideSettingsMessage() {
+            // скрыть с некоторой задержкой, чтобы пользователь
+            // успел его прочитать
+            setTimeout(function () {
+                $('.alert-success').first().slideUp();
+            }, 5000);
+        }
+
         // периодическое обновление ленты
         $(function updater() {
-            // функция будет срабатывать, только если была успешно загружена модель
+            // функция будет срабатывать, только если была успешно загружена модель с частотой обновления
             if (@updateTime > 0) {
                 // кроме того, ленты также должны быть уже успешно загружены
                 if (feedsAreLoaded == true) {
@@ -214,12 +231,15 @@
         // запомнить, что пользователь нажал на кнопку
         // отображения описания некоторой статьи
         $(document).on('click', '.button-show-description', function () {
-            // получить идентификатор элемента
+            // получить идентификатор нажатой кнопки "Показать"
             var id = $(this).attr('id');
+            // получить из идентификатора его численную часть
             id = id.replace('button_', '');
 
             // элемент со статьей
             var articleDescription = $('#article_' + id);
+
+            // флаг, является ли описание статьи теперь показанным, после клика пользователя
             var nowOpened = false;
 
             // если есть класс "showed", то он уже был открыт ранее
@@ -278,10 +298,13 @@
         // автоматическая замена значений частоты обновления,
         // не соответствующих промежутку [1, maxint]
         function validateUpdateTime() {
+            // текущее значение частоты обновления
             var input = $('#update-time-field').val();
+            // если число отрицательное - заменить на "1"
             if (input <= 0) {
                 $('#update-time-field').val(1);
             }
+            // если слишком большое - заменить на maxint
             else if (input > 2147483647) {
                 $('#update-time-field').val(2147483647);
             }

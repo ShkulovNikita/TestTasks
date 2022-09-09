@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using Task2.Models.FeedModels;
-using System.Net;
-using System.Diagnostics;
 
 namespace Task2.Helpers
 {
@@ -153,20 +153,6 @@ namespace Task2.Helpers
                 }
                     
             return feed;
-        }
-
-        /// <summary>
-        /// Получение указанных RSS-лент
-        /// </summary>
-        /// <param name="feedUrls">Ссылки на ленты</param>
-        /// <returns>Список с указанными лентами</returns>
-        static public List<Rss> GetRSSFeeds(List<string> feedUrls)
-        {
-            List<Rss> feeds = new List<Rss>();
-            foreach (string feedUrl in feedUrls)
-                feeds.Add(GetRSSFeed(feedUrl));
-
-            return feeds;
         }
 
         /// <summary>

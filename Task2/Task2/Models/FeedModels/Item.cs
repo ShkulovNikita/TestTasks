@@ -1,5 +1,8 @@
 ﻿namespace Task2.Models.FeedModels
 {
+    /// <summary>
+    /// Отдельная статья в RSS-ленте
+    /// </summary>
     public class Item
     {
         public Item () { }

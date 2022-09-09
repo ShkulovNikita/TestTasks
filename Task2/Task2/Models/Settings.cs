@@ -22,7 +22,7 @@ namespace Task2.Models
         }
 
         /// <summary>
-        /// Список лент
+        /// Список ссылок на RSS-ленты
         /// </summary>
         public List<string> Feeds { get; set; } = new List<string>();
 

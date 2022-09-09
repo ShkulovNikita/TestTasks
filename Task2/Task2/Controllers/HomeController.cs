@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Task2.Helpers;
-using Task2.Models.FeedModels;
+﻿using System.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Task2.Models;
+using Task2.Helpers;
+using Task2.Models.FeedModels;
 
 namespace Task2.Controllers
 {
@@ -27,7 +27,7 @@ namespace Task2.Controllers
             }
 
             // проверка подключения к прокси-серверу посредством
-            // тестового запроса к некоторой RSS-ленте
+            // тестового запроса к некоторой рабочей RSS-ленте
             string proxyResult = Connector.TestProxyConnection("https://habr.com/rss/interesting/");
             if (proxyResult != "ok")
             {
@@ -35,7 +35,7 @@ namespace Task2.Controllers
                 return View(null);
             }
 
-            // создание ViewModel
+            // создание ViewModel с текущими настройками
             Settings feedVm = new Settings(Configurator.Settings);
 
             return View(feedVm);
@@ -51,35 +51,10 @@ namespace Task2.Controllers
         public IActionResult UpdateSettings(Settings settings, bool format)
         {
             // валидация настроек
-            string validationErrors = "";
+            string validationErrors = SettingsValidator.Validate(settings);
 
-            // частота обновления должна быть положительной
-            if (settings.UpdateTime <= 0)
-                validationErrors += "Частота обновления должна быть положительным числом.\r\n";
-            // проверка слишком большого значения
-            if (settings.UpdateTime > int.MaxValue)
-                validationErrors += "Задано слишком большое число.\n";
-            // отсутствие списка лент
-            if (settings.Feeds == null)
-                validationErrors += "Не заданы RSS-ленты.\n";
-            // если список лент существует - проверка его содержимого
-            else
-            {
-                // пустота списка лент
-                if (settings.Feeds.Count == 0)
-                    validationErrors += "Не заданы RSS-ленты.\n";
-                // присутствие пустых адресов лент
-                if (!FeedsValidator.CheckEmptiness(settings.Feeds))
-                    validationErrors += "Адрес ленты не может быть пустым.\n";
-                // присутствие некорректных адресов лент
-                if (!FeedsValidator.CheckUrls(settings.Feeds))
-                    validationErrors += "Задан некорректный адрес ленты.\n";
-                // повторения значений
-                if (!FeedsValidator.CheckRepeatings(settings.Feeds))
-                    validationErrors += "Адреса лент не должны повторяться.\n";
-            }
             // были ли обнаружены ошибки при проверках выше
-            if (validationErrors != "")
+            if (validationErrors != "ok")
             {
                 TempData["ValidationError"] = validationErrors;
                 return RedirectToAction("Index");
@@ -120,7 +95,7 @@ namespace Task2.Controllers
             // получить ленты
             List<Channel> feeds = Connector.GetRssChannels(Configurator.Settings.Feeds);
 
-            // чистка в сессии идентификаторов тех статей, которых больше нет
+            // чистка в сессии идентификаторов тех статей, которых больше нет после обновления
             ClearUnusedIds(feeds);
 
             return PartialView(feeds);
@@ -160,7 +135,7 @@ namespace Task2.Controllers
         /// <summary>
         /// Получить из сессии список тех описаний, которые уже были раскрыты пользователем
         /// </summary>
-        /// <returns>Список идентификаторов описаний, которые были раскрыты пользователем</returns>
+        /// <returns>Список идентификаторов описаний статей, которые были раскрыты пользователем</returns>
         private List<string> GetOpenedDescriptions()
         {
             // попытаться получить список из сессии

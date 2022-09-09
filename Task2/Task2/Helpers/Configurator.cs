@@ -31,7 +31,7 @@ namespace Task2.Helpers
         /// Получить настройки из файла
         /// </summary>
         /// <returns>Настройки в виде объекта</returns>
-        static public Config GetSettings()
+        static private Config GetSettings()
         {
             Config settings = Parser.ParseSettings(ConfigName);
             return settings;

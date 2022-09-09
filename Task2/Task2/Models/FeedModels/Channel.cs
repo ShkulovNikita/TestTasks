@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Task2.Models.FeedModels
 {
+    /// <summary>
+    /// RSS-канал
+    /// </summary>
     public class Channel
     {
         public Channel () { }
